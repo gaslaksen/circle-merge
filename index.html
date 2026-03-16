@@ -339,6 +339,13 @@
     font-size: 16px;
     margin-top: -20px;
   }
+  #high-score {
+    color: rgba(255, 215, 0, 0.7);
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
   #play-btn {
     padding: 16px 48px;
     font-size: 22px;
@@ -527,6 +534,7 @@
   <div id="secret-btn"></div>
   <h1>Circle Merge</h1>
   <div class="subtitle">Drop, match, and merge!</div>
+  <div id="high-score">Best: 0</div>
   <div id="menu-circles"></div>
   <button id="play-btn">Play</button>
   <div class="sound-toggle">
@@ -728,6 +736,9 @@ const nextCircleEl = document.getElementById('next-circle');
 const restartBtn = document.getElementById('restart-btn');
 const goldenBubbleEl = document.getElementById('golden-bubble');
 const goldenCountEl = document.getElementById('golden-count');
+const highScoreEl = document.getElementById('high-score');
+let highScore = parseInt(localStorage.getItem('circleMerge_highScore'), 10) || 0;
+highScoreEl.textContent = 'Best: ' + highScore;
 
 function updateGoldenBubble() {
   if (goldenBalls > 0) {
@@ -984,6 +995,11 @@ function endGame() {
   canDrop = false;
   Runner.stop(runner);
   finalScoreEl.textContent = score;
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('circleMerge_highScore', highScore);
+    highScoreEl.textContent = 'Best: ' + highScore;
+  }
   gameOverEl.classList.add('show');
   playGameOver();
 }

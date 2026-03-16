@@ -593,7 +593,7 @@
   <div class="admin-title">Admin Panel</div>
   <div class="admin-input-row">
     <label>Golden Balls:</label>
-    <input type="number" id="admin-golden" min="0" max="999" value="0">
+    <input type="number" id="admin-golden" min="0" max="99999" value="0">
   </div>
   <div style="display:flex;gap:10px;">
     <button class="admin-btn" id="admin-apply">Apply</button>
@@ -794,6 +794,11 @@ function saveGoldenBalls() {
 }
 
 function loadGoldenBalls() {
+  // One-time reset for combo exploit fix (March 2026)
+  if (!localStorage.getItem('circleMerge_comboFixReset')) {
+    localStorage.setItem('circleMerge_goldenBalls', '0');
+    localStorage.setItem('circleMerge_comboFixReset', '1');
+  }
   const saved = localStorage.getItem('circleMerge_goldenBalls');
   if (saved !== null) goldenBalls = parseInt(saved, 10) || 0;
 }
@@ -981,7 +986,7 @@ function onCollision(event) {
 
       const basePoints = (newTier + 1) * 10 * getPointMultiplier();
       comboCount++;
-      const comboMultiplier = comboCount > 1 ? comboCount : 1;
+      const comboMultiplier = comboCount > 1 ? Math.min(comboCount, 5) : 1;
       const totalPoints = basePoints * comboMultiplier;
       score += totalPoints;
       scoreEl.textContent = 'Score: ' + score;
@@ -994,7 +999,8 @@ function onCollision(event) {
 
       // Floating text
       if (comboCount > 1) {
-        spawnFloatingText(midX, midY - 30, `${comboCount}x COMBO!`, '#ff6b6b', 36 + comboCount * 4);
+        const displayCombo = Math.min(comboCount, 5);
+        spawnFloatingText(midX, midY - 30, `${displayCombo}x COMBO!`, '#ff6b6b', 36 + displayCombo * 4);
         spawnFloatingText(midX, midY + 5, `+${totalPoints}`, '#7bed9f', 20);
       } else {
         spawnFloatingText(midX, midY - 15, `+${totalPoints}`, '#7bed9f', 22);

@@ -292,6 +292,38 @@
     75% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
   }
+  #broadcast-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.3);
+    background: rgba(22,33,62,0.95);
+    border: 2px solid rgba(100,180,255,0.5);
+    border-radius: 16px;
+    padding: 20px 28px;
+    color: #e0e0ff;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    z-index: 100;
+    pointer-events: none;
+    max-width: 300px;
+    word-wrap: break-word;
+    box-shadow: 0 0 30px rgba(100,180,255,0.3);
+    opacity: 0;
+  }
+  #broadcast-popup.show {
+    display: block;
+    animation: broadcast-pop 4s ease-out forwards;
+  }
+  @keyframes broadcast-pop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+    10% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+    15% { transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  }
   #menu-event-banner {
     display: none;
     padding: 6px 16px;
@@ -577,6 +609,11 @@
     </div>
     <div id="event-status" style="color:rgba(224,224,255,0.4);font-size:12px;margin-top:8px;">Not connected</div>
   </div>
+  <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;width:280px;">
+    <div class="admin-title" style="margin-bottom:12px;">Broadcast Message</div>
+    <input type="text" id="admin-broadcast" maxlength="100" placeholder="Type a message..." style="width:100%;box-sizing:border-box;padding:8px 12px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#e0e0ff;font-size:14px;outline:none;">
+    <button class="admin-btn" id="admin-send" style="margin-top:10px;width:100%;">Send to All</button>
+  </div>
 </div>
 
 <div id="game-screen">
@@ -611,6 +648,7 @@
 </div>
 
 <div id="event-announce">2x POINTS EVENT!</div>
+<div id="broadcast-popup"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -1583,6 +1621,16 @@ function showEventAnnouncement() {
   setTimeout(() => { eventAnnounce.classList.remove('show'); }, 2600);
 }
 
+const broadcastPopup = document.getElementById('broadcast-popup');
+function showBroadcast(message) {
+  broadcastPopup.textContent = message;
+  broadcastPopup.classList.remove('show');
+  void broadcastPopup.offsetWidth;
+  broadcastPopup.classList.add('show');
+  playEventSound();
+  setTimeout(() => { broadcastPopup.classList.remove('show'); }, 4200);
+}
+
 function getPointMultiplier() {
   return doublePointsActive ? 2 : 1;
 }
@@ -1602,6 +1650,24 @@ try {
       knob.style.left = doublePointsActive ? '23px' : '3px';
       event2xSwitch.style.background = doublePointsActive ? '#e94560' : 'rgba(255,255,255,0.15)';
       if (doublePointsActive && !wasActive) showEventAnnouncement();
+    });
+
+    const broadcastRef = db.ref('broadcast');
+    let lastBroadcastTime = 0;
+    broadcastRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data && data.message && data.timestamp > lastBroadcastTime) {
+        lastBroadcastTime = data.timestamp;
+        showBroadcast(data.message);
+      }
+    });
+
+    document.getElementById('admin-send').addEventListener('click', () => {
+      const input = document.getElementById('admin-broadcast');
+      const msg = input.value.trim();
+      if (!msg) return;
+      broadcastRef.set({ message: msg, timestamp: Date.now() });
+      input.value = '';
     });
 
     firebaseReady = true;

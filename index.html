@@ -13,6 +13,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
+    height: 100dvh;
     font-family: 'Segoe UI', system-ui, sans-serif;
     overflow: hidden;
     user-select: none;
@@ -527,35 +528,54 @@
     z-index: 4;
   }
 
-  /* Phone layout: move side elements to top bar area */
+  /* Phone layout: scale game to fit and move side elements */
   @media (max-width: 480px) {
+    body {
+      justify-content: flex-start;
+      padding-top: 10px;
+    }
+    #game-screen {
+      transform: scale(0.82);
+      transform-origin: top center;
+    }
+    #menu-screen {
+      transform: scale(0.85);
+      transform-origin: center center;
+    }
+    #header {
+      gap: 10px;
+    }
+    #mobile-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      height: 40px;
+    }
     #golden-bubble {
-      position: fixed;
-      top: 6px;
-      right: 60px;
-      left: auto;
-      bottom: auto;
+      position: static;
+      width: 36px;
+      height: 36px;
+      font-size: 12px;
     }
     #info-btn {
-      position: fixed;
-      top: 10px;
-      right: 16px;
-      left: auto;
-      bottom: auto;
+      position: static;
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
     }
     #info-panel {
-      position: fixed;
-      top: 50px;
-      right: 16px;
+      position: absolute;
+      top: 80px;
+      right: 10px;
       left: auto;
       bottom: auto;
     }
     #event-banner {
-      position: fixed;
-      top: 10px;
-      right: 110px;
-      left: auto;
+      position: static;
       bottom: auto;
+      left: auto;
     }
   }
 </style>
@@ -617,6 +637,7 @@
 </div>
 
 <div id="game-screen">
+  <div id="mobile-bar"></div>
   <div id="header">
     <button id="back-btn">Menu</button>
     <button id="reset-btn">Reset</button>
@@ -1695,6 +1716,14 @@ event2xSwitch.addEventListener('click', () => {
     if (newVal) showEventAnnouncement();
   }
 });
+
+// On mobile, move golden bubble, event banner, and info btn into mobile bar
+if (window.innerWidth <= 480) {
+  const mobileBar = document.getElementById('mobile-bar');
+  mobileBar.appendChild(document.getElementById('event-banner'));
+  mobileBar.appendChild(document.getElementById('golden-bubble'));
+  mobileBar.appendChild(document.getElementById('info-btn'));
+}
 
 // Load saved golden balls and start on menu
 loadGoldenBalls();

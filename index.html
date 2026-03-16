@@ -985,6 +985,11 @@ function onCollision(event) {
       const totalPoints = basePoints * comboMultiplier;
       score += totalPoints;
       scoreEl.textContent = 'Score: ' + score;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('circleMerge_highScore', highScore);
+        highScoreEl.textContent = 'Best: ' + highScore;
+      }
       checkGoldenMilestone();
 
       // Floating text

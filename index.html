@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circle Merge</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+  #header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 10px;
+  }
+  #score {
+    color: #e0e0ff;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  #next-label {
+    color: #e0e0ff;
+    font-size: 16px;
+  }
+  #next-preview {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #next-circle {
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: rgba(0,0,0,0.4);
+    font-family: system-ui, sans-serif;
+  }
+  #game-container {
+    position: relative;
+    border: 3px solid #3a3a5c;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    background: #16213e;
+  }
+  canvas { display: block; }
+  #game-over {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.75);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  #game-over.show { display: flex; }
+  #game-over h2 {
+    color: #ff6b6b;
+    font-size: 36px;
+    margin-bottom: 10px;
+  }
+  #game-over p {
+    color: #e0e0ff;
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  #restart-btn {
+    padding: 12px 32px;
+    font-size: 18px;
+    background: #e94560;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #restart-btn:hover { background: #c23152; }
+  #menu-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 30px;
+    position: relative;
+  }
+  #secret-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    cursor: default;
+    z-index: 30;
+  }
+  #admin-passcode, #admin-panel {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    gap: 20px;
+    position: relative;
+  }
+  .admin-corner-back {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+  }
+  .admin-title {
+    color: #e0e0ff;
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .admin-dots {
+    display: flex;
+    gap: 12px;
+  }
+  .admin-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    transition: background 0.2s;
+  }
+  .admin-dot.filled { background: #e94560; }
+  .admin-numpad {
+    display: grid;
+    grid-template-columns: repeat(5, 48px);
+    gap: 8px;
+  }
+  .admin-numpad button {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08);
+    color: #e0e0ff;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .admin-numpad button:hover { background: rgba(255,255,255,0.18); }
+  .admin-input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .admin-input-row label {
+    color: #e0e0ff;
+    font-size: 16px;
+  }
+  .admin-input-row input {
+    width: 80px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: #e0e0ff;
+    font-size: 18px;
+    text-align: center;
+  }
+  .admin-btn {
+    padding: 10px 28px;
+    font-size: 16px;
+    background: #e94560;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .admin-btn:hover { background: #c23152; }
+  .admin-btn.secondary {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .admin-btn.secondary:hover { background: rgba(255,255,255,0.2); }
+  .admin-error {
+    color: #ff6b6b;
+    font-size: 14px;
+    height: 20px;
+  }
+  #info-btn {
+    position: absolute;
+    bottom: 100px;
+    right: -60px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.5);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 15;
+    transition: background 0.2s;
+    font-family: serif;
+  }
+  #info-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+  #info-panel {
+    display: none;
+    position: absolute;
+    bottom: 140px;
+    right: -60px;
+    background: rgba(22,33,62,0.95);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 14px 16px;
+    z-index: 15;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  #info-panel.show { display: block; }
+  .info-title {
+    color: #e0e0ff;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 13px;
+    color: rgba(224,224,255,0.7);
+  }
+  .info-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: bold;
+    color: rgba(0,0,0,0.4);
+    flex-shrink: 0;
+  }
+  .info-arrow { color: rgba(255,255,255,0.3); font-size: 11px; }
+  .info-pts { color: #7bed9f; font-weight: 600; margin-left: auto; }
+  #event-announce {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.3);
+    font-size: 48px;
+    font-weight: 900;
+    color: #ff6b6b;
+    text-align: center;
+    text-shadow: 0 0 30px rgba(233,69,96,0.8), 0 0 60px rgba(233,69,96,0.4);
+    z-index: 100;
+    pointer-events: none;
+    font-family: system-ui, sans-serif;
+    letter-spacing: 2px;
+    opacity: 0;
+    transition: none;
+  }
+  #event-announce.show {
+    display: block;
+    animation: announce-pop 2.5s ease-out forwards;
+  }
+  @keyframes announce-pop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+    15% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+    25% { transform: translate(-50%, -50%) scale(1); }
+    75% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+  }
+  #menu-event-banner {
+    display: none;
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #e94560, #ff6b6b);
+    color: white;
+    text-align: center;
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 14px;
+    animation: banner-shimmer 2s ease-in-out infinite alternate;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 12px rgba(233,69,96,0.4);
+  }
+  #event-banner {
+    display: none;
+    position: absolute;
+    bottom: 8px;
+    left: -60px;
+    padding: 5px 8px;
+    background: linear-gradient(135deg, #e94560, #ff6b6b);
+    color: white;
+    text-align: center;
+    font-weight: 700;
+    font-size: 9px;
+    line-height: 1.2;
+    z-index: 20;
+    border-radius: 10px;
+    animation: banner-shimmer 2s ease-in-out infinite alternate;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 12px rgba(233,69,96,0.4);
+  }
+  @keyframes banner-shimmer {
+    from { opacity: 0.85; }
+    to { opacity: 1; }
+  }
+  #menu-screen h1 {
+    font-size: 52px;
+    font-weight: 800;
+    color: #e0e0ff;
+    text-align: center;
+    text-shadow: 0 0 30px rgba(160, 140, 255, 0.5);
+  }
+  #menu-screen .subtitle {
+    color: rgba(224, 224, 255, 0.5);
+    font-size: 16px;
+    margin-top: -20px;
+  }
+  #play-btn {
+    padding: 16px 48px;
+    font-size: 22px;
+    background: #e94560;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    font-weight: 600;
+  }
+  #play-btn:hover { background: #c23152; transform: scale(1.05); }
+  #menu-circles {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .menu-circle {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: rgba(0,0,0,0.4);
+    font-family: system-ui, sans-serif;
+  }
+  .sound-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(224, 224, 255, 0.6);
+    font-size: 14px;
+  }
+  .sound-toggle .switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .sound-toggle .switch.on {
+    background: #e94560;
+  }
+  .sound-toggle .switch .knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    transition: left 0.2s;
+  }
+  .sound-toggle .switch.on .knob {
+    left: 23px;
+  }
+  #game-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  #back-btn, #reset-btn {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #back-btn:hover, #reset-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+  #golden-bubble {
+    position: absolute;
+    top: 100px;
+    right: -60px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff8c0, #f0e68c);
+    border: 2px solid rgba(255,224,64,0.6);
+    box-shadow: 0 0 16px rgba(255,224,64,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-weight: bold;
+    font-size: 14px;
+    color: rgba(140,110,0,0.7);
+    font-family: system-ui, sans-serif;
+  }
+  #golden-bubble:hover { transform: scale(1.15); box-shadow: 0 0 24px rgba(255,224,64,0.8); }
+  #golden-bubble.active {
+    border-color: #fff;
+    box-shadow: 0 0 20px rgba(255,255,255,0.8);
+    animation: golden-pulse 0.8s ease-in-out infinite alternate;
+  }
+  @keyframes golden-pulse {
+    from { box-shadow: 0 0 16px rgba(255,224,64,0.5); }
+    to { box-shadow: 0 0 28px rgba(255,255,255,0.9); }
+  }
+  #golden-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #e94560;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #drop-line {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(255,255,255,0.15);
+    pointer-events: none;
+    z-index: 5;
+    display: none;
+  }
+  #danger-zone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255,0,0,0.06) 10px,
+      rgba(255,0,0,0.06) 20px
+    );
+    border-bottom: 2px dashed rgba(255,80,80,0.3);
+    pointer-events: none;
+    z-index: 4;
+  }
+</style>
+</head>
+<body>
+
+<div id="menu-screen">
+  <div id="secret-btn"></div>
+  <h1>Circle Merge</h1>
+  <div class="subtitle">Drop, match, and merge!</div>
+  <div id="menu-circles"></div>
+  <button id="play-btn">Play</button>
+  <div class="sound-toggle">
+    <span>Sound</span>
+    <div id="sound-switch" class="switch on"><div class="knob"></div></div>
+  </div>
+  <div id="menu-event-banner">2x POINTS ACTIVE</div>
+</div>
+
+<div id="admin-passcode">
+  <div class="admin-title">Enter Passcode</div>
+  <div class="admin-dots">
+    <div class="admin-dot" id="dot0"></div>
+    <div class="admin-dot" id="dot1"></div>
+    <div class="admin-dot" id="dot2"></div>
+  </div>
+  <div class="admin-error" id="admin-error"></div>
+  <div class="admin-numpad" id="admin-numpad"></div>
+  <button class="admin-btn secondary" id="passcode-back">Back</button>
+</div>
+
+<div id="admin-panel">
+  <button class="admin-btn secondary admin-corner-back" id="admin-back">Back</button>
+  <div class="admin-title">Admin Panel</div>
+  <div class="admin-input-row">
+    <label>Golden Balls:</label>
+    <input type="number" id="admin-golden" min="0" max="999" value="0">
+  </div>
+  <div style="display:flex;gap:10px;">
+    <button class="admin-btn" id="admin-apply">Apply</button>
+    <button class="admin-btn secondary" id="admin-reset-golden">Reset Golden</button>
+  </div>
+  <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;width:280px;">
+    <div class="admin-title" style="margin-bottom:12px;">Live Events</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <label style="color:#e0e0ff;font-size:15px;">2x Points</label>
+      <div id="event-2x-switch" class="switch" style="position:relative;width:44px;height:24px;background:rgba(255,255,255,0.15);border-radius:12px;cursor:pointer;transition:background 0.2s;">
+        <div class="knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:left 0.2s;pointer-events:none;"></div>
+      </div>
+    </div>
+    <div id="event-status" style="color:rgba(224,224,255,0.4);font-size:12px;margin-top:8px;">Not connected</div>
+  </div>
+</div>
+
+<div id="game-screen">
+  <div id="header">
+    <button id="back-btn">Menu</button>
+    <button id="reset-btn">Reset</button>
+    <div id="score">Score: 0</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span id="next-label">Next:</span>
+      <div id="next-preview">
+        <div id="next-circle"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-container">
+    <div id="danger-zone"></div>
+    <div id="drop-line"></div>
+    <canvas id="game-canvas"></canvas>
+    <div id="game-over">
+      <h2>Game Over</h2>
+      <p>Score: <span id="final-score">0</span></p>
+      <button id="restart-btn">Play Again</button>
+    </div>
+  </div>
+  <div id="golden-bubble">
+    <span id="golden-count">0</span>
+  </div>
+  <button id="info-btn">i</button>
+  <div id="info-panel"></div>
+  <div id="event-banner">2x<br>POINTS</div>
+</div>
+
+<div id="event-announce">2x POINTS EVENT!</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+<script>
+const GAME_WIDTH = 400;
+const GAME_HEIGHT = 600;
+
+// Circle tiers: each level has a radius and color
+const TIERS = [
+  { radius: 15, color: '#ff6b6b', name: 'Red',     glow: '#ff4040' },
+  { radius: 22, color: '#ffa502', name: 'Orange',   glow: '#e08900' },
+  { radius: 29, color: '#ffd32a', name: 'Yellow',   glow: '#e0b800' },
+  { radius: 36, color: '#7bed9f', name: 'Green',    glow: '#40d070' },
+  { radius: 43, color: '#70a1ff', name: 'Blue',     glow: '#4080ff' },
+  { radius: 50, color: '#a29bfe', name: 'Purple',   glow: '#8070ff' },
+  { radius: 58, color: '#fd79a8', name: 'Pink',     glow: '#e05090' },
+  { radius: 66, color: '#00cec9', name: 'Teal',     glow: '#00a8a3' },
+  { radius: 74, color: '#f8a5c2', name: 'Rose',     glow: '#e080a0' },
+  { radius: 82, color: '#ffffff', name: 'White',    glow: '#d0d0ff' },
+  { radius: 92, color: '#f0e68c', name: 'Gold',     glow: '#ffe040' },
+];
+
+// Only drop the first 5 tiers
+const DROP_TIERS = 5;
+
+const { Engine, Render, Runner, Bodies, Body, Composite, Events, Vector } = Matter;
+
+// Sound system
+let soundEnabled = true;
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playDrop() {
+  if (!soundEnabled) return;
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(400, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(250, ctx.currentTime + 0.1);
+  gain.gain.setValueAtTime(0.15, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + 0.15);
+}
+
+function playMerge(tier) {
+  if (!soundEnabled) return;
+  const ctx = getAudioCtx();
+  // Higher pitch for higher tiers
+  const baseFreq = 300 + tier * 80;
+  // Play two tones for a satisfying chord
+  for (const offset of [0, 1.5]) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq * (1 + offset * 0.33), ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.2 * (1 + offset * 0.33), ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.25);
+  }
+}
+
+function playGameOver() {
+  if (!soundEnabled) return;
+  const ctx = getAudioCtx();
+  const notes = [400, 350, 300, 200];
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.15);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.2);
+    osc.start(ctx.currentTime + i * 0.15);
+    osc.stop(ctx.currentTime + i * 0.15 + 0.2);
+  });
+}
+
+let engine, render, runner;
+let score = 0;
+let gameOver = false;
+let canDrop = true;
+let currentTier = 0;
+let nextTier = 0;
+let dropX = GAME_WIDTH / 2;
+let merging = new Set(); // track bodies currently merging
+let goldenBalls = 0;
+let goldenMode = false;
+let lastGoldenMilestone = 0;
+
+let savedState = null;
+
+// Combo system
+let comboCount = 0;
+let comboTimer = null;
+let floatingTexts = [];
+
+const menuScreen = document.getElementById('menu-screen');
+const gameScreen = document.getElementById('game-screen');
+const playBtn = document.getElementById('play-btn');
+const backBtn = document.getElementById('back-btn');
+const resetBtn = document.getElementById('reset-btn');
+const canvas = document.getElementById('game-canvas');
+const container = document.getElementById('game-container');
+const dropLine = document.getElementById('drop-line');
+const scoreEl = document.getElementById('score');
+const finalScoreEl = document.getElementById('final-score');
+const gameOverEl = document.getElementById('game-over');
+const nextCircleEl = document.getElementById('next-circle');
+const restartBtn = document.getElementById('restart-btn');
+const goldenBubbleEl = document.getElementById('golden-bubble');
+const goldenCountEl = document.getElementById('golden-count');
+
+function updateGoldenBubble() {
+  if (goldenBalls > 0) {
+    goldenBubbleEl.style.display = 'flex';
+    goldenCountEl.textContent = goldenBalls;
+    goldenBubbleEl.classList.toggle('active', goldenMode);
+  } else {
+    goldenBubbleEl.style.display = 'none';
+    goldenMode = false;
+  }
+}
+
+function saveGoldenBalls() {
+  localStorage.setItem('circleMerge_goldenBalls', goldenBalls);
+}
+
+function loadGoldenBalls() {
+  const saved = localStorage.getItem('circleMerge_goldenBalls');
+  if (saved !== null) goldenBalls = parseInt(saved, 10) || 0;
+}
+
+function checkGoldenMilestone() {
+  const milestone = Math.floor(score / 5000);
+  if (milestone > lastGoldenMilestone) {
+    const earned = milestone - lastGoldenMilestone;
+    goldenBalls += earned;
+    lastGoldenMilestone = milestone;
+    updateGoldenBubble();
+    saveGoldenBalls();
+  }
+}
+
+function init() {
+  score = 0;
+  gameOver = false;
+  canDrop = true;
+  merging = new Set();
+  // Preserve golden balls across resets
+  goldenMode = false;
+  lastGoldenMilestone = 0;
+  gameOverTimer = 0;
+  scoreEl.textContent = 'Score: 0';
+  updateGoldenBubble();
+
+  canvas.width = GAME_WIDTH;
+  canvas.height = GAME_HEIGHT;
+  container.style.width = GAME_WIDTH + 'px';
+  container.style.height = GAME_HEIGHT + 'px';
+
+  if (engine) {
+    Composite.clear(engine.world);
+    Engine.clear(engine);
+    if (runner) Runner.stop(runner);
+  }
+
+  engine = Engine.create({ gravity: { x: 0, y: 1.8 } });
+
+  // Walls
+  const wallOpts = { isStatic: true, friction: 0.3, restitution: 0.2, render: { visible: false } };
+  const floor  = Bodies.rectangle(GAME_WIDTH/2, GAME_HEIGHT + 25, GAME_WIDTH + 50, 50, wallOpts);
+  const wallL  = Bodies.rectangle(-25, GAME_HEIGHT/2, 50, GAME_HEIGHT + 50, wallOpts);
+  const wallR  = Bodies.rectangle(GAME_WIDTH + 25, GAME_HEIGHT/2, 50, GAME_HEIGHT + 50, wallOpts);
+  Composite.add(engine.world, [floor, wallL, wallR]);
+
+  runner = Runner.create();
+  Runner.run(runner, engine);
+
+  currentTier = randomDropTier();
+  nextTier = randomDropTier();
+  updateNextPreview();
+
+  Events.on(engine, 'collisionStart', onCollision);
+  Events.on(engine, 'afterUpdate', checkGameOver);
+
+  gameOverEl.classList.remove('show');
+  requestAnimationFrame(draw);
+}
+
+function randomDropTier() {
+  // Weighted: smaller circles more likely
+  const weights = [6, 5, 3, 2, 0.5];
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < DROP_TIERS; i++) {
+    r -= weights[i];
+    if (r <= 0) return i;
+  }
+  return 0;
+}
+
+function updateNextPreview() {
+  const t = TIERS[nextTier];
+  const size = Math.min(t.radius * 2, 44);
+  nextCircleEl.style.width = size + 'px';
+  nextCircleEl.style.height = size + 'px';
+  nextCircleEl.style.background = `radial-gradient(circle at 35% 35%, ${lighten(t.color, 40)}, ${t.color})`;
+  nextCircleEl.style.fontSize = Math.max(10, size * 0.4) + 'px';
+  nextCircleEl.textContent = nextTier + 1;
+}
+
+function lighten(hex, pct) {
+  let r = parseInt(hex.slice(1,3), 16);
+  let g = parseInt(hex.slice(3,5), 16);
+  let b = parseInt(hex.slice(5,7), 16);
+  r = Math.min(255, r + pct);
+  g = Math.min(255, g + pct);
+  b = Math.min(255, b + pct);
+  return `rgb(${r},${g},${b})`;
+}
+
+function createCircle(x, y, tier, isGolden) {
+  const t = TIERS[tier];
+  const circle = Bodies.circle(x, y, t.radius, {
+    restitution: 0.3,
+    friction: 0.5,
+    density: 0.001 * (tier + 1),
+    label: 'circle',
+    plugin: { tier: tier, golden: !!isGolden },
+  });
+  Composite.add(engine.world, circle);
+  return circle;
+}
+
+function dropCircle(x) {
+  if (!canDrop || gameOver) return;
+  canDrop = false;
+
+  // Reset combo for new drop
+  comboCount = 0;
+  if (comboTimer) { clearTimeout(comboTimer); comboTimer = null; }
+
+  if (goldenMode) {
+    // Drop a golden ball (tier 0 size)
+    const t = TIERS[0];
+    const cx = Math.max(t.radius + 5, Math.min(GAME_WIDTH - t.radius - 5, x));
+    createCircle(cx, t.radius + 10, 0, true);
+    playDrop();
+    goldenBalls--;
+    goldenMode = false;
+    updateGoldenBubble();
+    saveGoldenBalls();
+    setTimeout(() => { canDrop = true; }, 400);
+    return;
+  }
+
+  const tier = currentTier;
+  const t = TIERS[tier];
+  const cx = Math.max(t.radius + 5, Math.min(GAME_WIDTH - t.radius - 5, x));
+
+  createCircle(cx, t.radius + 10, tier);
+  playDrop();
+
+  currentTier = nextTier;
+  nextTier = randomDropTier();
+  updateNextPreview();
+
+  setTimeout(() => { canDrop = true; }, 400);
+}
+
+function onCollision(event) {
+  for (const pair of event.pairs) {
+    const a = pair.bodyA;
+    const b = pair.bodyB;
+
+    if (a.label !== 'circle' || b.label !== 'circle') continue;
+    if (merging.has(a.id) || merging.has(b.id)) continue;
+
+    const tierA = a.plugin.tier;
+    const tierB = b.plugin.tier;
+    const goldenA = a.plugin.golden;
+    const goldenB = b.plugin.golden;
+
+    // Golden ball merges with anything
+    let shouldMerge = false;
+    let newTier;
+    if (goldenA || goldenB) {
+      const other = goldenA ? b : a;
+      const otherTier = other.plugin.tier;
+      if (otherTier < TIERS.length - 1) {
+        shouldMerge = true;
+        newTier = otherTier + 1;
+      }
+    } else if (tierA === tierB && tierA < TIERS.length - 1) {
+      shouldMerge = true;
+      newTier = tierA + 1;
+    }
+
+    if (shouldMerge) {
+      merging.add(a.id);
+      merging.add(b.id);
+
+      const midX = (a.position.x + b.position.x) / 2;
+      const midY = (a.position.y + b.position.y) / 2;
+
+      Composite.remove(engine.world, a);
+      Composite.remove(engine.world, b);
+      merging.delete(a.id);
+      merging.delete(b.id);
+
+      const newCircle = createCircle(midX, midY, newTier);
+      Body.setVelocity(newCircle, { x: 0, y: -3 });
+
+      const basePoints = (newTier + 1) * 10 * getPointMultiplier();
+      comboCount++;
+      const comboMultiplier = comboCount > 1 ? comboCount : 1;
+      const totalPoints = basePoints * comboMultiplier;
+      score += totalPoints;
+      scoreEl.textContent = 'Score: ' + score;
+      checkGoldenMilestone();
+
+      // Floating text
+      if (comboCount > 1) {
+        spawnFloatingText(midX, midY - 30, `${comboCount}x COMBO!`, '#ff6b6b', 36 + comboCount * 4);
+        spawnFloatingText(midX, midY + 5, `+${totalPoints}`, '#7bed9f', 20);
+      } else {
+        spawnFloatingText(midX, midY - 15, `+${totalPoints}`, '#7bed9f', 22);
+      }
+
+      // Reset combo timer - combos chain within 1.5s
+      if (comboTimer) clearTimeout(comboTimer);
+      comboTimer = setTimeout(() => { comboCount = 0; comboTimer = null; }, 1500);
+
+      spawnParticles(midX, midY, TIERS[newTier].color);
+      playMerge(newTier);
+    }
+  }
+}
+
+let gameOverTimer = 0;
+function checkGameOver() {
+  if (gameOver) return;
+  const bodies = Composite.allBodies(engine.world);
+  let anyAbove = false;
+  for (const body of bodies) {
+    if (body.isStatic || body.label !== 'circle') continue;
+    if (body.speed > 0.5) continue; // still moving fast
+    if (body.position.y - TIERS[body.plugin.tier].radius < 55) {
+      anyAbove = true;
+      break;
+    }
+  }
+  if (anyAbove) {
+    gameOverTimer++;
+    if (gameOverTimer > 90) { // ~1.5 seconds settled above line
+      endGame();
+    }
+  } else {
+    gameOverTimer = 0;
+  }
+}
+
+function endGame() {
+  gameOver = true;
+  canDrop = false;
+  Runner.stop(runner);
+  finalScoreEl.textContent = score;
+  gameOverEl.classList.add('show');
+  playGameOver();
+}
+
+// Particles
+let particles = [];
+let goldenTrail = [];
+function spawnParticles(x, y, color) {
+  for (let i = 0; i < 12; i++) {
+    const angle = (Math.PI * 2 * i) / 12 + Math.random() * 0.3;
+    const speed = 2 + Math.random() * 3;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      radius: 2 + Math.random() * 3,
+      color,
+      life: 1,
+    });
+  }
+}
+
+function spawnFloatingText(x, y, text, color, size) {
+  floatingTexts.push({
+    x, y, text, color, size,
+    life: 1,
+    vy: -2,
+    scale: 0.3,
+  });
+}
+
+// Drawing
+const ctx = canvas.getContext('2d');
+
+function draw() {
+  ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+  // Draw bodies
+  const bodies = Composite.allBodies(engine.world);
+  for (const body of bodies) {
+    if (body.label !== 'circle') continue;
+    const tier = body.plugin.tier;
+    const isGolden = body.plugin.golden;
+    const t = TIERS[tier];
+    const { x, y } = body.position;
+    const r = t.radius;
+
+    if (isGolden) {
+      // Spawn trail particles behind golden ball
+      if (body.speed > 0.3) {
+        for (let i = 0; i < 2; i++) {
+          goldenTrail.push({
+            x: x + (Math.random() - 0.5) * r,
+            y: y + (Math.random() - 0.5) * r,
+            radius: 2 + Math.random() * 4,
+            life: 1,
+            color: Math.random() > 0.5 ? '#ffe040' : '#fffde0',
+          });
+        }
+      }
+
+      // Outer glow halo
+      ctx.save();
+      ctx.shadowColor = '#ffe040';
+      ctx.shadowBlur = 40;
+      ctx.beginPath();
+      ctx.arc(x, y, r + 6, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,224,64,0.15)';
+      ctx.fill();
+      ctx.restore();
+
+      // Bright golden ball
+      ctx.save();
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = 30;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(x - r * 0.25, y - r * 0.25, r * 0.05, x, y, r);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.3, '#fffde0');
+      grad.addColorStop(0.7, '#f0e68c');
+      grad.addColorStop(1, '#daa520');
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+
+      // Bright outline
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,200,0.7)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Star symbol
+      ctx.fillStyle = 'rgba(140,110,0,0.5)';
+      ctx.font = `bold ${Math.max(10, r * 0.7)}px system-ui`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('\u2605', x, y + 1);
+    } else {
+      // Normal circle
+      ctx.save();
+      ctx.shadowColor = t.glow;
+      ctx.shadowBlur = 15;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+      grad.addColorStop(0, lighten(t.color, 60));
+      grad.addColorStop(1, t.color);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.font = `bold ${Math.max(12, r * 0.6)}px system-ui`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(tier + 1, x, y + 1);
+    }
+  }
+
+  // Draw golden trail
+  for (let i = goldenTrail.length - 1; i >= 0; i--) {
+    const p = goldenTrail[i];
+    p.life -= 0.04;
+    if (p.life <= 0) {
+      goldenTrail.splice(i, 1);
+      continue;
+    }
+    ctx.save();
+    ctx.globalAlpha = p.life * 0.7;
+    ctx.shadowColor = '#ffe040';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius * p.life, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Draw particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.1;
+    p.life -= 0.025;
+    if (p.life <= 0) {
+      particles.splice(i, 1);
+      continue;
+    }
+    ctx.globalAlpha = p.life;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius * p.life, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Draw floating texts
+  for (let i = floatingTexts.length - 1; i >= 0; i--) {
+    const ft = floatingTexts[i];
+    ft.life -= 0.018;
+    ft.y += ft.vy;
+    ft.vy *= 0.97;
+    ft.scale = Math.min(1, ft.scale + 0.15);
+    if (ft.life <= 0) {
+      floatingTexts.splice(i, 1);
+      continue;
+    }
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, ft.life * 2);
+    ctx.translate(ft.x, ft.y);
+    ctx.scale(ft.scale, ft.scale);
+    ctx.font = `bold ${ft.size}px system-ui`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    // Outline
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+    ctx.lineWidth = 4;
+    ctx.strokeText(ft.text, 0, 0);
+    // Fill
+    ctx.fillStyle = ft.color;
+    ctx.fillText(ft.text, 0, 0);
+    ctx.restore();
+  }
+
+  // Drop guide
+  if (canDrop && !gameOver) {
+    const previewTier = goldenMode ? 0 : currentTier;
+    const t = TIERS[previewTier];
+    ctx.save();
+    ctx.setLineDash([4, 6]);
+    ctx.strokeStyle = goldenMode ? 'rgba(255,224,64,0.25)' : 'rgba(255,255,255,0.15)';
+    ctx.beginPath();
+    ctx.moveTo(dropX, 0);
+    ctx.lineTo(dropX, GAME_HEIGHT);
+    ctx.stroke();
+    ctx.restore();
+
+    // Preview circle at top
+    const previewY = t.radius + 10;
+    if (goldenMode) {
+      // Glowing golden preview
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      ctx.shadowColor = '#ffe040';
+      ctx.shadowBlur = 35;
+      ctx.beginPath();
+      ctx.arc(dropX, previewY, t.radius + 5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,224,64,0.2)';
+      ctx.fill();
+      ctx.restore();
+
+      ctx.save();
+      ctx.globalAlpha = 0.65;
+      ctx.shadowColor = '#fff';
+      ctx.shadowBlur = 25;
+      ctx.beginPath();
+      ctx.arc(dropX, previewY, t.radius, 0, Math.PI * 2);
+      const grad = ctx.createRadialGradient(dropX - t.radius * 0.25, previewY - t.radius * 0.25, t.radius * 0.05, dropX, previewY, t.radius);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.3, '#fffde0');
+      grad.addColorStop(0.7, '#f0e68c');
+      grad.addColorStop(1, '#daa520');
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,200,0.5)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
+
+      // Star label
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = 'rgba(140,110,0,0.5)';
+      ctx.font = `bold ${Math.max(10, t.radius * 0.7)}px system-ui`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('\u2605', dropX, previewY + 1);
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.arc(dropX, previewY, t.radius, 0, Math.PI * 2);
+      ctx.fillStyle = t.color;
+      ctx.fill();
+
+      // Label on preview circle
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.font = `bold ${Math.max(10, t.radius * 0.6)}px system-ui`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(currentTier + 1, dropX, previewY + 1);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  if (!gameOver) requestAnimationFrame(draw);
+}
+
+// Input handling
+function getX(e) {
+  const rect = canvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  return clientX - rect.left;
+}
+
+canvas.addEventListener('mousemove', (e) => {
+  dropX = getX(e);
+});
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  dropX = getX(e);
+}, { passive: false });
+
+canvas.addEventListener('click', (e) => {
+  dropCircle(getX(e));
+});
+canvas.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  dropCircle(dropX);
+});
+
+restartBtn.addEventListener('click', init);
+
+function saveState() {
+  if (!engine || gameOver) return null;
+  const bodies = Composite.allBodies(engine.world);
+  const circles = [];
+  for (const body of bodies) {
+    if (body.label !== 'circle') continue;
+    circles.push({
+      x: body.position.x,
+      y: body.position.y,
+      vx: body.velocity.x,
+      vy: body.velocity.y,
+      tier: body.plugin.tier,
+      golden: !!body.plugin.golden,
+    });
+  }
+  return { circles, score, currentTier, nextTier, goldenBalls, lastGoldenMilestone };
+}
+
+function restoreState(state) {
+  score = state.score;
+  gameOver = false;
+  canDrop = true;
+  merging = new Set();
+  gameOverTimer = 0;
+  loadGoldenBalls();
+  lastGoldenMilestone = state.lastGoldenMilestone || 0;
+  goldenMode = false;
+  scoreEl.textContent = 'Score: ' + score;
+  updateGoldenBubble();
+
+  canvas.width = GAME_WIDTH;
+  canvas.height = GAME_HEIGHT;
+  container.style.width = GAME_WIDTH + 'px';
+  container.style.height = GAME_HEIGHT + 'px';
+
+  if (engine) {
+    Composite.clear(engine.world);
+    Engine.clear(engine);
+    if (runner) Runner.stop(runner);
+  }
+
+  engine = Engine.create({ gravity: { x: 0, y: 1.8 } });
+
+  const wallOpts = { isStatic: true, friction: 0.3, restitution: 0.2, render: { visible: false } };
+  const floor  = Bodies.rectangle(GAME_WIDTH/2, GAME_HEIGHT + 25, GAME_WIDTH + 50, 50, wallOpts);
+  const wallL  = Bodies.rectangle(-25, GAME_HEIGHT/2, 50, GAME_HEIGHT + 50, wallOpts);
+  const wallR  = Bodies.rectangle(GAME_WIDTH + 25, GAME_HEIGHT/2, 50, GAME_HEIGHT + 50, wallOpts);
+  Composite.add(engine.world, [floor, wallL, wallR]);
+
+  for (const c of state.circles) {
+    const circle = createCircle(c.x, c.y, c.tier, c.golden);
+    Body.setVelocity(circle, { x: c.vx, y: c.vy });
+  }
+
+  currentTier = state.currentTier;
+  nextTier = state.nextTier;
+  updateNextPreview();
+
+  runner = Runner.create();
+  Runner.run(runner, engine);
+
+  Events.on(engine, 'collisionStart', onCollision);
+  Events.on(engine, 'afterUpdate', checkGameOver);
+
+  gameOverEl.classList.remove('show');
+  requestAnimationFrame(draw);
+}
+
+function showMenu() {
+  // Save game state if not game over
+  if (!gameOver && engine) {
+    savedState = saveState();
+  }
+
+  if (runner) Runner.stop(runner);
+  gameOver = true;
+  canDrop = false;
+
+  playBtn.textContent = savedState ? 'Resume' : 'Play';
+  gameScreen.style.display = 'none';
+  menuScreen.style.display = 'flex';
+}
+
+function startGame() {
+  menuScreen.style.display = 'none';
+  gameScreen.style.display = 'flex';
+  if (savedState) {
+    const state = savedState;
+    savedState = null;
+    restoreState(state);
+  } else {
+    init();
+  }
+}
+
+playBtn.addEventListener('click', startGame);
+backBtn.addEventListener('click', showMenu);
+resetBtn.addEventListener('click', () => {
+  savedState = null;
+  init();
+});
+goldenBubbleEl.addEventListener('click', () => {
+  if (goldenBalls > 0 && !gameOver) {
+    goldenMode = !goldenMode;
+    updateGoldenBubble();
+  }
+});
+
+// Build decorative circles on menu
+(function buildMenuCircles() {
+  const container = document.getElementById('menu-circles');
+  for (let i = 0; i < 5; i++) {
+    const t = TIERS[i];
+    const size = t.radius * 2 * 0.6;
+    const el = document.createElement('div');
+    el.className = 'menu-circle';
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.background = `radial-gradient(circle at 35% 35%, ${lighten(t.color, 40)}, ${t.color})`;
+    el.style.fontSize = Math.max(9, size * 0.4) + 'px';
+    el.style.boxShadow = `0 0 12px ${t.glow}`;
+    el.textContent = i + 1;
+    container.appendChild(el);
+  }
+})();
+
+// Sound toggle
+const soundSwitch = document.getElementById('sound-switch');
+soundSwitch.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  soundSwitch.classList.toggle('on', soundEnabled);
+});
+
+// Info panel
+const infoBtn = document.getElementById('info-btn');
+const infoPanel = document.getElementById('info-panel');
+(function buildInfoPanel() {
+  let html = '<div class="info-title">Merge Points</div>';
+  for (let i = 0; i < TIERS.length - 1; i++) {
+    const from = TIERS[i];
+    const to = TIERS[i + 1];
+    const pts = (i + 2) * 10;
+    html += `<div class="info-row">
+      <div class="info-circle" style="background:${from.color}">${i+1}</div>
+      <span>+</span>
+      <div class="info-circle" style="background:${from.color}">${i+1}</div>
+      <span class="info-arrow">&rarr;</span>
+      <div class="info-circle" style="background:${to.color}">${i+2}</div>
+      <span class="info-pts">${pts} pts</span>
+    </div>`;
+  }
+  infoPanel.innerHTML = html;
+})();
+infoBtn.addEventListener('click', () => {
+  infoPanel.classList.toggle('show');
+});
+canvas.addEventListener('click', () => {
+  infoPanel.classList.remove('show');
+});
+
+// Admin panel logic
+const PASSCODE = [7, 9, 14];
+let passcodeInput = [];
+const adminPasscodeScreen = document.getElementById('admin-passcode');
+const adminPanelScreen = document.getElementById('admin-panel');
+const adminError = document.getElementById('admin-error');
+const adminGoldenInput = document.getElementById('admin-golden');
+
+// Build numpad (1-15)
+(function buildNumpad() {
+  const numpad = document.getElementById('admin-numpad');
+  for (let i = 1; i <= 15; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.addEventListener('click', () => enterPasscodeDigit(i));
+    numpad.appendChild(btn);
+  }
+})();
+
+function enterPasscodeDigit(num) {
+  passcodeInput.push(num);
+  const idx = passcodeInput.length - 1;
+  document.getElementById('dot' + idx).classList.add('filled');
+
+  if (passcodeInput.length === 3) {
+    if (passcodeInput[0] === PASSCODE[0] && passcodeInput[1] === PASSCODE[1] && passcodeInput[2] === PASSCODE[2]) {
+      // Correct
+      adminPasscodeScreen.style.display = 'none';
+      adminPanelScreen.style.display = 'flex';
+      adminGoldenInput.value = goldenBalls;
+      resetPasscode();
+    } else {
+      // Wrong
+      adminError.textContent = 'Wrong passcode';
+      setTimeout(() => {
+        adminError.textContent = '';
+        resetPasscode();
+      }, 1000);
+    }
+  }
+}
+
+function resetPasscode() {
+  passcodeInput = [];
+  for (let i = 0; i < 3; i++) {
+    document.getElementById('dot' + i).classList.remove('filled');
+  }
+}
+
+document.getElementById('secret-btn').addEventListener('click', () => {
+  menuScreen.style.display = 'none';
+  adminPasscodeScreen.style.display = 'flex';
+  resetPasscode();
+  adminError.textContent = '';
+});
+
+document.getElementById('passcode-back').addEventListener('click', () => {
+  adminPasscodeScreen.style.display = 'none';
+  menuScreen.style.display = 'flex';
+});
+
+document.getElementById('admin-apply').addEventListener('click', () => {
+  goldenBalls = Math.max(0, parseInt(adminGoldenInput.value, 10) || 0);
+  saveGoldenBalls();
+  updateGoldenBubble();
+  adminPanelScreen.style.display = 'none';
+  menuScreen.style.display = 'flex';
+});
+
+document.getElementById('admin-reset-golden').addEventListener('click', () => {
+  goldenBalls = 0;
+  saveGoldenBalls();
+  updateGoldenBubble();
+  adminGoldenInput.value = 0;
+});
+
+document.getElementById('admin-back').addEventListener('click', () => {
+  adminPanelScreen.style.display = 'none';
+  menuScreen.style.display = 'flex';
+});
+
+// Firebase live events
+// TODO: Replace with your Firebase project config
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+};
+
+let doublePointsActive = false;
+let firebaseReady = false;
+let eventsRef = null;
+const eventBanner = document.getElementById('event-banner');
+const eventStatus = document.getElementById('event-status');
+const event2xSwitch = document.getElementById('event-2x-switch');
+
+const menuEventBanner = document.getElementById('menu-event-banner');
+const eventAnnounce = document.getElementById('event-announce');
+
+function updateEventBanner() {
+  eventBanner.style.display = doublePointsActive ? 'block' : 'none';
+  menuEventBanner.style.display = doublePointsActive ? 'block' : 'none';
+}
+
+function playEventSound() {
+  if (!soundEnabled) return;
+  const ctx = getAudioCtx();
+  // Fanfare-like sound
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.12);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.12);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.4);
+    osc.start(ctx.currentTime + i * 0.12);
+    osc.stop(ctx.currentTime + i * 0.12 + 0.4);
+  });
+}
+
+function showEventAnnouncement() {
+  eventAnnounce.classList.remove('show');
+  void eventAnnounce.offsetWidth; // force reflow
+  eventAnnounce.classList.add('show');
+  playEventSound();
+  setTimeout(() => { eventAnnounce.classList.remove('show'); }, 2600);
+}
+
+function getPointMultiplier() {
+  return doublePointsActive ? 2 : 1;
+}
+
+try {
+  if (FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY') {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    const db = firebase.database();
+    eventsRef = db.ref('events/doublePoints');
+
+    eventsRef.on('value', (snapshot) => {
+      const wasActive = doublePointsActive;
+      doublePointsActive = !!snapshot.val();
+      updateEventBanner();
+      event2xSwitch.classList.toggle('on', doublePointsActive);
+      const knob = event2xSwitch.querySelector('.knob');
+      knob.style.left = doublePointsActive ? '23px' : '3px';
+      event2xSwitch.style.background = doublePointsActive ? '#e94560' : 'rgba(255,255,255,0.15)';
+      if (doublePointsActive && !wasActive) showEventAnnouncement();
+    });
+
+    firebaseReady = true;
+    eventStatus.textContent = 'Connected';
+    eventStatus.style.color = 'rgba(100,255,150,0.6)';
+  } else {
+    eventStatus.textContent = 'Local mode (this device only)';
+  }
+} catch (e) {
+  eventStatus.textContent = 'Connection failed';
+}
+
+event2xSwitch.addEventListener('click', () => {
+  const newVal = !doublePointsActive;
+  if (firebaseReady) {
+    eventsRef.set(newVal);
+  } else {
+    // Local-only fallback when Firebase isn't configured
+    doublePointsActive = newVal;
+    updateEventBanner();
+    event2xSwitch.classList.toggle('on', newVal);
+    const knob = event2xSwitch.querySelector('.knob');
+    knob.style.left = newVal ? '23px' : '3px';
+    event2xSwitch.style.background = newVal ? '#e94560' : 'rgba(255,255,255,0.15)';
+    if (newVal) showEventAnnouncement();
+  }
+});
+
+// Load saved golden balls and start on menu
+loadGoldenBalls();
+showMenu();
+</script>
+</body>
+</html>

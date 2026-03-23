@@ -1274,10 +1274,10 @@ function saveGoldenBalls() {
 }
 
 function loadGoldenBalls() {
-  // One-time reset for combo exploit fix (March 2026)
-  if (!localStorage.getItem('circleMerge_comboFixReset')) {
-    localStorage.setItem('circleMerge_goldenBalls', '0');
-    localStorage.setItem('circleMerge_comboFixReset', '1');
+  // One-time reset: set everyone to 10 golden balls
+  if (!localStorage.getItem('circleMerge_goldenReset2')) {
+    localStorage.setItem('circleMerge_goldenBalls', '10');
+    localStorage.setItem('circleMerge_goldenReset2', '1');
   }
   const saved = localStorage.getItem('circleMerge_goldenBalls');
   if (saved !== null) goldenBalls = parseInt(saved, 10) || 0;

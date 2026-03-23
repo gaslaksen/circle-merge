@@ -1274,10 +1274,12 @@ function saveGoldenBalls() {
 }
 
 function loadGoldenBalls() {
-  // One-time reset: set everyone to 10 golden balls
-  if (!localStorage.getItem('circleMerge_goldenReset2')) {
+  // One-time reset: golden balls to 10, clear shop and tokens
+  if (!localStorage.getItem('circleMerge_shopReset1')) {
     localStorage.setItem('circleMerge_goldenBalls', '10');
-    localStorage.setItem('circleMerge_goldenReset2', '1');
+    localStorage.removeItem('circleMerge_shopData');
+    localStorage.setItem('circleMerge_tokens', '0');
+    localStorage.setItem('circleMerge_shopReset1', '1');
   }
   const saved = localStorage.getItem('circleMerge_goldenBalls');
   if (saved !== null) goldenBalls = parseInt(saved, 10) || 0;
@@ -1568,7 +1570,7 @@ function endGame() {
   Runner.stop(runner);
   finalScoreEl.textContent = score;
   // Award tokens
-  const earned = Math.floor(score / 10);
+  const earned = Math.floor(score / 100);
   if (earned > 0) {
     tokens += earned;
     saveShopData();
@@ -2743,8 +2745,17 @@ applyBackground();
 updateTokenDisplays();
 updateShopButtons();
 
-// Load saved golden balls and start on menu
+// Load saved golden balls (and run any one-time resets)
 loadGoldenBalls();
+// Reload shop/token state in case reset cleared them
+tokens = parseInt(localStorage.getItem('circleMerge_tokens'), 10) || 0;
+shopData = JSON.parse(localStorage.getItem('circleMerge_shopData') || 'null') || {
+  owned: { bg: ['default'], skin: ['default'] },
+  equipped: { bg: 'default', skin: 'default' }
+};
+applyBackground();
+updateTokenDisplays();
+updateShopButtons();
 showMenu();
 
 // Register service worker for PWA

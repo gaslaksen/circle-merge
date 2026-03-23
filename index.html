@@ -688,7 +688,9 @@
       padding: 4px 0;
     }
     #golden-bubble {
-      position: static !important;
+      position: relative !important;
+      top: auto;
+      right: auto;
       width: 36px;
       height: 36px;
       font-size: 12px;
@@ -1275,11 +1277,11 @@ function saveGoldenBalls() {
 
 function loadGoldenBalls() {
   // One-time reset: golden balls to 10, clear shop and tokens
-  if (!localStorage.getItem('circleMerge_shopReset1')) {
+  if (!localStorage.getItem('circleMerge_shopReset2')) {
     localStorage.setItem('circleMerge_goldenBalls', '10');
     localStorage.removeItem('circleMerge_shopData');
     localStorage.setItem('circleMerge_tokens', '0');
-    localStorage.setItem('circleMerge_shopReset1', '1');
+    localStorage.setItem('circleMerge_shopReset2', '1');
   }
   const saved = localStorage.getItem('circleMerge_goldenBalls');
   if (saved !== null) goldenBalls = parseInt(saved, 10) || 0;
@@ -2421,7 +2423,6 @@ function syncToFirebase() {
   const userRef = db.ref('users/' + currentUser.key);
   userRef.update({
     highScore: highScore,
-    goldenBalls: goldenBalls,
     lastSeen: Date.now()
   });
   db.ref('leaderboard/' + currentUser.key).set({
@@ -2442,12 +2443,7 @@ function syncFromFirebase(callback) {
         localStorage.setItem('circleMerge_highScore', highScore);
         highScoreEl.textContent = 'Best: ' + highScore;
       }
-      // Take higher golden balls
-      if (data.goldenBalls > goldenBalls) {
-        goldenBalls = data.goldenBalls;
-        saveGoldenBalls();
-        updateGoldenBubble();
-      }
+      // Golden balls are now local-only (shop currency)
     }
     // Push local data back if it's higher
     syncToFirebase();
@@ -2490,7 +2486,6 @@ function createAccount(username, passcode) {
       username: username,
       passcodeHash: simpleHash(passcode),
       highScore: highScore,
-      goldenBalls: goldenBalls,
       lastSeen: Date.now()
     };
     db.ref('users/' + key).set(userData);

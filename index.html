@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#1a1a2e">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
   body {
     background: #1a1a2e;
     display: flex;
@@ -109,15 +109,7 @@
     position: relative;
   }
   #secret-btn {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
     cursor: default;
-    z-index: 30;
   }
   #admin-passcode, #admin-panel {
     display: none;
@@ -399,6 +391,28 @@
     font-weight: 600;
   }
   #play-btn:hover { background: #c23152; transform: scale(1.05); }
+  #settings-btn {
+    padding: 10px 32px;
+    font-size: 16px;
+    background: rgba(255,255,255,0.1);
+    color: #e0e0ff;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+  #settings-btn:hover { background: rgba(255,255,255,0.18); }
+  #settings-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #1a1a2e;
+    z-index: 50;
+  }
   #menu-circles {
     display: flex;
     gap: 8px;
@@ -464,7 +478,7 @@
   #back-btn:hover, #reset-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
   #golden-bubble {
     position: absolute;
-    top: 100px;
+    top: 140px;
     right: -60px;
     width: 44px;
     height: 44px;
@@ -536,35 +550,166 @@
     z-index: 4;
   }
 
-  /* Phone layout: move side elements to top bar area */
+  .lb-entry {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    background: rgba(255,255,255,0.05);
+    gap: 10px;
+  }
+  .lb-entry.me {
+    background: rgba(108,92,231,0.25);
+    border: 1px solid rgba(108,92,231,0.4);
+  }
+  .lb-rank {
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+    font-weight: 700;
+    width: 28px;
+    text-align: center;
+  }
+  .lb-entry:nth-child(1) .lb-rank { color: #ffd700; }
+  .lb-entry:nth-child(2) .lb-rank { color: #c0c0c0; }
+  .lb-entry:nth-child(3) .lb-rank { color: #cd7f32; }
+  .lb-name {
+    flex: 1;
+    color: #e0e0ff;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .lb-score {
+    color: #7bed9f;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* Shop styles */
+  .shop-section-title {
+    color: #e0e0ff;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 16px 0 8px;
+    letter-spacing: 0.5px;
+  }
+  .shop-shelf {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .shop-shelf-board {
+    display: flex;
+    gap: 10px;
+    padding: 14px 12px 18px;
+    background: linear-gradient(180deg, #8B6914 0%, #a07828 40%, #7a5a10 60%, #6b4c0a 100%);
+    border-radius: 10px;
+    box-shadow: 0 6px 0 #5a3e08, 0 8px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,220,140,0.3);
+    overflow-x: auto;
+  }
+  .shop-shelf-board::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 4px;
+    right: 4px;
+    height: 6px;
+    background: linear-gradient(180deg, #5a3e08, #4a3006);
+    border-radius: 0 0 8px 8px;
+  }
+  .shop-item {
+    flex: 1;
+    min-width: 90px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 8px;
+    padding: 10px 6px 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .shop-preview {
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+  .shop-bg-preview {
+    border-radius: 8px;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  .shop-name {
+    color: #e0e0ff;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .shop-price {
+    color: #fdcb6e;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .shop-buy-btn {
+    padding: 4px 14px;
+    font-size: 12px;
+    background: linear-gradient(135deg, #e17055, #fdcb6e);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .shop-buy-btn.owned {
+    background: rgba(255,255,255,0.1);
+    color: #7bed9f;
+    cursor: default;
+  }
+  .shop-buy-btn.equipped {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: white;
+    cursor: default;
+  }
+
+  #mobile-util-bar {
+    display: none;
+  }
+  /* Phone layout: move side elements into top utility bar */
   @media (max-width: 480px) {
+    #mobile-util-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 4px 0;
+    }
     #golden-bubble {
-      position: fixed;
-      top: 6px;
-      right: 60px;
-      left: auto;
-      bottom: auto;
+      position: static !important;
+      width: 36px;
+      height: 36px;
+      font-size: 12px;
     }
     #info-btn {
-      position: fixed;
-      top: 10px;
-      right: 16px;
-      left: auto;
-      bottom: auto;
+      position: static !important;
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
     }
     #info-panel {
       position: fixed;
-      top: 50px;
-      right: 16px;
+      top: 80px;
+      right: 10px;
       left: auto;
       bottom: auto;
     }
     #event-banner {
-      position: fixed;
-      top: 10px;
-      right: 110px;
-      left: auto;
+      position: static !important;
       bottom: auto;
+      left: auto;
     }
   }
 </style>
@@ -572,17 +717,135 @@
 <body>
 
 <div id="menu-screen">
-  <div id="secret-btn"></div>
   <h1>Circle Merge</h1>
   <div class="subtitle">Drop, match, and merge!</div>
   <div id="high-score">Best: 0</div>
   <div id="menu-circles"></div>
   <button id="play-btn">Play</button>
+  <button id="shop-btn" style="padding:10px 28px;font-size:16px;background:linear-gradient(135deg,#e17055,#fdcb6e);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Shop</button>
+  <div id="menu-tokens" style="color:#fdcb6e;font-size:14px;font-weight:600;margin-top:-4px;">Tokens: 0</div>
+  <button id="leaderboard-btn" style="padding:10px 28px;font-size:16px;background:rgba(255,255,255,0.1);color:#e0e0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;">Leaderboard</button>
+  <button id="settings-btn">Settings</button>
+  <div id="menu-event-banner">2x POINTS ACTIVE</div>
+</div>
+
+<div id="settings-screen">
+  <h2 style="color:#e0e0ff;font-size:28px;margin-bottom:24px;">Settings</h2>
+  <div id="auth-status" style="margin-bottom:16px;text-align:center;">
+    <div id="auth-signed-out">
+      <button id="auth-signin-btn" style="padding:10px 28px;font-size:15px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Sign In / Sign Up</button>
+    </div>
+    <div id="auth-signed-in" style="display:none;">
+      <div style="color:#7bed9f;font-size:14px;margin-bottom:8px;">Signed in as: <strong id="auth-username-display"></strong></div>
+      <button id="auth-signout-btn" style="padding:6px 18px;font-size:13px;background:rgba(255,255,255,0.1);color:#ff6b6b;border:1px solid rgba(255,80,80,0.3);border-radius:8px;cursor:pointer;">Sign Out</button>
+    </div>
+  </div>
   <div class="sound-toggle">
     <span>Sound</span>
     <div id="sound-switch" class="switch on"><div class="knob"></div></div>
   </div>
-  <div id="menu-event-banner">2x POINTS ACTIVE</div>
+  <button id="reset-score-btn" style="margin-top:20px;padding:10px 24px;font-size:15px;background:rgba(255,255,255,0.1);color:#ff6b6b;border:1px solid rgba(255,80,80,0.3);border-radius:8px;cursor:pointer;">Reset High Score</button>
+  <div id="secret-btn" style="margin-top:24px;padding:8px 20px;font-size:13px;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.03);border-radius:8px;cursor:default;">Admin</div>
+  <button id="settings-back-btn" style="margin-top:30px;padding:10px 28px;font-size:16px;background:rgba(255,255,255,0.1);color:#e0e0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;">Back</button>
+</div>
+
+<div id="auth-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <h2 style="color:#e0e0ff;font-size:24px;margin-bottom:8px;">Account</h2>
+  <input type="text" id="auth-username" maxlength="16" placeholder="Username (3-16 chars)" style="width:240px;padding:10px 14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#e0e0ff;font-size:15px;outline:none;">
+  <input type="password" id="auth-passcode" maxlength="6" placeholder="PIN (4-6 digits)" inputmode="numeric" style="width:240px;padding:10px 14px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#e0e0ff;font-size:15px;outline:none;">
+  <div id="auth-error" style="color:#ff6b6b;font-size:13px;min-height:18px;"></div>
+  <div style="display:flex;gap:10px;">
+    <button id="auth-login-btn" style="padding:10px 20px;font-size:15px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Sign In</button>
+    <button id="auth-create-btn" style="padding:10px 20px;font-size:15px;background:rgba(255,255,255,0.1);color:#e0e0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;">Create Account</button>
+  </div>
+  <button id="auth-back-btn" style="margin-top:12px;padding:8px 24px;font-size:14px;background:rgba(255,255,255,0.1);color:#e0e0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;">Back</button>
+</div>
+
+<div id="leaderboard-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;z-index:200;flex-direction:column;align-items:center;padding-top:40px;">
+  <h2 style="color:#e0e0ff;font-size:28px;margin-bottom:20px;">Leaderboard</h2>
+  <div id="leaderboard-list" style="width:300px;max-height:60vh;overflow-y:auto;"></div>
+  <div id="leaderboard-empty" style="color:rgba(255,255,255,0.4);font-size:14px;padding:20px;">No scores yet. Be the first!</div>
+  <button id="leaderboard-back-btn" style="margin-top:20px;padding:10px 28px;font-size:16px;background:rgba(255,255,255,0.1);color:#e0e0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;">Back</button>
+</div>
+
+<div id="shop-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;z-index:200;flex-direction:column;align-items:center;overflow-y:auto;">
+  <div style="width:100%;max-width:380px;padding:20px 16px 40px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h2 style="color:#e0e0ff;font-size:26px;margin:0;">Shop</h2>
+      <div id="shop-tokens" style="color:#fdcb6e;font-size:16px;font-weight:700;">Tokens: 0</div>
+    </div>
+
+    <!-- Golden Balls Section -->
+    <div class="shop-section-title">Golden Balls</div>
+    <div class="shop-shelf">
+      <div class="shop-shelf-board">
+        <div class="shop-item" data-category="golden" data-id="golden1">
+          <div class="shop-preview" style="font-size:32px;">&#9733;</div>
+          <div class="shop-name">1 Golden Ball</div>
+          <div class="shop-price">10 tokens</div>
+          <button class="shop-buy-btn" data-category="golden" data-id="golden1">Buy</button>
+        </div>
+        <div class="shop-item" data-category="golden" data-id="golden5">
+          <div class="shop-preview" style="font-size:32px;">&#9733;x5</div>
+          <div class="shop-name">5 Golden Balls</div>
+          <div class="shop-price">50 tokens</div>
+          <button class="shop-buy-btn" data-category="golden" data-id="golden5">Buy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backgrounds Section -->
+    <div class="shop-section-title">Backgrounds</div>
+    <div class="shop-shelf">
+      <div class="shop-shelf-board">
+        <div class="shop-item" data-category="bg" data-id="sunset">
+          <div class="shop-preview shop-bg-preview" style="background:linear-gradient(135deg,#e17055,#6c5ce7);"></div>
+          <div class="shop-name">Sunset</div>
+          <div class="shop-price">500 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="sunset">Buy</button>
+        </div>
+        <div class="shop-item" data-category="bg" data-id="ocean">
+          <div class="shop-preview shop-bg-preview" style="background:linear-gradient(135deg,#00b894,#0c2461);"></div>
+          <div class="shop-name">Ocean</div>
+          <div class="shop-price">500 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="ocean">Buy</button>
+        </div>
+        <div class="shop-item" data-category="bg" data-id="galaxy">
+          <div class="shop-preview shop-bg-preview" style="background:radial-gradient(ellipse at 30% 20%,#2d1b69,#0a0a1a);"></div>
+          <div class="shop-name">Galaxy</div>
+          <div class="shop-price">1000 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="galaxy">Buy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ball Skins Section -->
+    <div class="shop-section-title">Ball Skins</div>
+    <div class="shop-shelf">
+      <div class="shop-shelf-board">
+        <div class="shop-item" data-category="skin" data-id="neon">
+          <div class="shop-preview" style="font-size:11px;color:#0ff;text-shadow:0 0 10px #0ff;">&#11044; NEON</div>
+          <div class="shop-name">Neon</div>
+          <div class="shop-price">500 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="neon">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="pastel">
+          <div class="shop-preview" style="font-size:11px;color:#f8b4c8;">&#11044; Pastel</div>
+          <div class="shop-name">Pastel</div>
+          <div class="shop-price">500 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="pastel">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="emoji">
+          <div class="shop-preview" style="font-size:20px;">🍒🍊🍋</div>
+          <div class="shop-name">Emoji</div>
+          <div class="shop-price">1000 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="emoji">Buy</button>
+        </div>
+      </div>
+    </div>
+
+    <button id="shop-back-btn" style="margin-top:20px;padding:10px 28px;font-size:16px;background:rgba(255,255,255,0.1);color:#e0e0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;display:block;margin-left:auto;margin-right:auto;">Back</button>
+  </div>
 </div>
 
 <div id="admin-passcode">
@@ -626,6 +889,7 @@
 </div>
 
 <div id="game-screen">
+  <div id="mobile-util-bar"></div>
   <div id="header">
     <button id="back-btn">Menu</button>
     <button id="reset-btn">Reset</button>
@@ -645,6 +909,7 @@
     <div id="game-over">
       <h2>Game Over</h2>
       <p>Score: <span id="final-score">0</span></p>
+      <p id="tokens-earned" style="color:#fdcb6e;font-size:16px;font-weight:700;margin-top:4px;"></p>
       <button id="restart-btn">Play Again</button>
     </div>
   </div>
@@ -692,6 +957,177 @@ let audioCtx = null;
 function getAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return audioCtx;
+}
+
+// Background music system
+let musicNodes = null;
+let musicInterval = null;
+let currentMusicType = null;
+
+function startMusic(type) {
+  if (!soundEnabled) return;
+  if (musicNodes && currentMusicType === type) return;
+  if (musicNodes) stopMusic();
+
+  const ctx = getAudioCtx();
+  const masterGain = ctx.createGain();
+  masterGain.gain.setValueAtTime(0, ctx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(type === 'game' ? 0.05 : 0.035, ctx.currentTime + 2);
+  masterGain.connect(ctx.destination);
+
+  const oscs = [];
+  currentMusicType = type;
+
+  if (type === 'game') {
+    // Upbeat happy music - fast arpeggiated patterns
+    const chords = [
+      [523.3, 659.3, 784.0],  // C major (high)
+      [587.3, 740.0, 880.0],  // D major
+      [440.0, 554.4, 659.3],  // A major
+      [392.0, 493.9, 587.3],  // G major
+    ];
+    const bassNotes = [261.6, 293.7, 220.0, 196.0];
+    let chordIdx = 0;
+    let beat = 0;
+
+    function playBeat() {
+      const now = ctx.currentTime;
+      const chord = chords[chordIdx % chords.length];
+      const bassFreq = bassNotes[chordIdx % bassNotes.length];
+
+      // Arpeggiate the chord notes with bouncy rhythm
+      chord.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        osc.type = 'triangle';
+        const delay = i * 0.08;
+        osc.frequency.setValueAtTime(freq, now + delay);
+        // Add slight vibrato
+        osc.detune.setValueAtTime(Math.sin(beat * 0.7) * 8, now);
+
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, now + delay);
+        g.gain.linearRampToValueAtTime(0.25, now + delay + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.08, now + delay + 0.2);
+        g.gain.linearRampToValueAtTime(0, now + delay + 0.4);
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.45);
+        oscs.push(osc);
+      });
+
+      // Bouncy bass on every other beat
+      if (beat % 2 === 0) {
+        const bass = ctx.createOscillator();
+        bass.type = 'sine';
+        bass.frequency.setValueAtTime(bassFreq, now);
+        const bg = ctx.createGain();
+        bg.gain.setValueAtTime(0.35, now);
+        bg.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        bass.connect(bg);
+        bg.connect(masterGain);
+        bass.start(now);
+        bass.stop(now + 0.35);
+        oscs.push(bass);
+      }
+
+      // High sparkle melody every 4 beats
+      if (beat % 4 === 0) {
+        const melodyNotes = [1047, 1175, 1319, 1175];
+        const mNote = melodyNotes[(chordIdx) % melodyNotes.length];
+        const mel = ctx.createOscillator();
+        mel.type = 'sine';
+        mel.frequency.setValueAtTime(mNote, now + 0.1);
+        const mg = ctx.createGain();
+        mg.gain.setValueAtTime(0, now + 0.1);
+        mg.gain.linearRampToValueAtTime(0.12, now + 0.13);
+        mg.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+        mel.connect(mg);
+        mg.connect(masterGain);
+        mel.start(now + 0.1);
+        mel.stop(now + 0.55);
+        oscs.push(mel);
+      }
+
+      beat++;
+      if (beat % 8 === 0) chordIdx++;
+      // Clean up old stopped oscillators
+      if (oscs.length > 50) oscs.splice(0, oscs.length - 20);
+    }
+
+    playBeat();
+    musicInterval = setInterval(playBeat, 280); // ~107 BPM feel
+  } else {
+    // Menu music - gentle, dreamy, slower
+    const chords = [
+      [261.6, 329.6, 392.0, 493.9],  // Cmaj7
+      [220.0, 261.6, 329.6, 415.3],  // Am(add9)
+      [174.6, 220.0, 293.7, 349.2],  // Fmaj9
+      [196.0, 246.9, 329.6, 392.0],  // G6
+    ];
+    let chordIdx = 0;
+
+    function playMenuChord() {
+      const now = ctx.currentTime;
+      const chord = chords[chordIdx % chords.length];
+      chordIdx++;
+
+      // Soft pad
+      chord.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.detune.setValueAtTime((Math.random() - 0.5) * 12, now);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, now);
+        g.gain.linearRampToValueAtTime(0.2, now + 1.5);
+        g.gain.linearRampToValueAtTime(0.1, now + 4);
+        g.gain.linearRampToValueAtTime(0, now + 6.5);
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start(now);
+        osc.stop(now + 7);
+        oscs.push(osc);
+      });
+
+      // Gentle high twinkle
+      const twinkle = [784, 880, 784, 659.3];
+      const tFreq = twinkle[chordIdx % twinkle.length];
+      const t = ctx.createOscillator();
+      t.type = 'sine';
+      t.frequency.setValueAtTime(tFreq, now + 2);
+      const tg = ctx.createGain();
+      tg.gain.setValueAtTime(0, now + 2);
+      tg.gain.linearRampToValueAtTime(0.08, now + 2.1);
+      tg.gain.exponentialRampToValueAtTime(0.01, now + 3.5);
+      t.connect(tg);
+      tg.connect(masterGain);
+      t.start(now + 2);
+      t.stop(now + 3.6);
+      oscs.push(t);
+
+      if (oscs.length > 40) oscs.splice(0, oscs.length - 15);
+    }
+
+    playMenuChord();
+    musicInterval = setInterval(playMenuChord, 7000);
+  }
+
+  musicNodes = { masterGain, oscs };
+}
+
+function stopMusic() {
+  if (!musicNodes) return;
+  if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
+  const ctx = getAudioCtx();
+  const oldNodes = musicNodes;
+  musicNodes = null;
+  currentMusicType = null;
+  oldNodes.masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
+  oldNodes.oscs.forEach(o => { try { o.stop(ctx.currentTime + 1); } catch(e) {} });
+  setTimeout(() => {
+    try { oldNodes.masterGain.disconnect(); } catch(e) {}
+  }, 1500);
 }
 
 function playDrop() {
@@ -763,6 +1199,40 @@ let lastGoldenMilestone = 0;
 
 let savedState = null;
 
+// Token & Shop system
+let tokens = parseInt(localStorage.getItem('circleMerge_tokens'), 10) || 0;
+let shopData = JSON.parse(localStorage.getItem('circleMerge_shopData') || 'null') || {
+  owned: { bg: ['default'], skin: ['default'] },
+  equipped: { bg: 'default', skin: 'default' }
+};
+function saveShopData() {
+  localStorage.setItem('circleMerge_shopData', JSON.stringify(shopData));
+  localStorage.setItem('circleMerge_tokens', tokens);
+}
+
+// Background definitions
+const BACKGROUNDS = {
+  default: { name: 'Default', style: '#16213e' },
+  sunset: { name: 'Sunset', style: 'linear-gradient(135deg,#e17055,#6c5ce7)' },
+  ocean: { name: 'Ocean', style: 'linear-gradient(135deg,#00b894,#0c2461)' },
+  galaxy: { name: 'Galaxy', style: 'radial-gradient(ellipse at 30% 20%,#2d1b69,#0a0a1a)' },
+};
+
+// Skin definitions
+const SKINS = {
+  default: 'Default',
+  neon: 'Neon',
+  pastel: 'Pastel',
+  emoji: 'Emoji',
+};
+
+const EMOJI_MAP = ['🍒','🍊','🍋','🍏','🫐','🍇','🍑','🥝','🍓','⚪','🌟'];
+
+const PASTEL_COLORS = [
+  '#f8b4c8', '#ffd4a8', '#fff4a8', '#b8e8c8', '#b4d4f8',
+  '#d4b8f8', '#f8b8d8', '#a8e8e8', '#f8c8d8', '#e8e8e8', '#f8e8b8'
+];
+
 // Combo system
 let comboCount = 0;
 let comboTimer = null;
@@ -770,6 +1240,7 @@ let floatingTexts = [];
 
 const menuScreen = document.getElementById('menu-screen');
 const gameScreen = document.getElementById('game-screen');
+const settingsScreen = document.getElementById('settings-screen');
 const playBtn = document.getElementById('play-btn');
 const backBtn = document.getElementById('back-btn');
 const resetBtn = document.getElementById('reset-btn');
@@ -908,7 +1379,7 @@ function createCircle(x, y, tier, isGolden) {
     friction: 0.5,
     density: 0.001 * (tier + 1),
     label: 'circle',
-    plugin: { tier: tier, golden: !!isGolden },
+    plugin: { tier: tier, golden: !!isGolden, createdAt: Date.now() },
   });
   Composite.add(engine.world, circle);
   return circle;
@@ -951,6 +1422,7 @@ function dropCircle(x) {
 }
 
 function onCollision(event) {
+  const mergedThisFrame = [];
   for (const pair of event.pairs) {
     const a = pair.bodyA;
     const b = pair.bodyB;
@@ -973,6 +1445,30 @@ function onCollision(event) {
         shouldMerge = true;
         newTier = otherTier + 1;
       }
+    } else if (tierA === tierB && tierA === TIERS.length - 1) {
+      // Two max-tier (11) balls: both disappear, award 5000 points
+      merging.add(a.id);
+      merging.add(b.id);
+      mergedThisFrame.push(a.id, b.id);
+      const midX = (a.position.x + b.position.x) / 2;
+      const midY = (a.position.y + b.position.y) / 2;
+      Composite.remove(engine.world, a);
+      Composite.remove(engine.world, b);
+      const bonusPoints = 5000 * getPointMultiplier();
+      score += bonusPoints;
+      scoreEl.textContent = 'Score: ' + score;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('circleMerge_highScore', highScore);
+        highScoreEl.textContent = 'Best: ' + highScore;
+        syncToFirebase();
+      }
+      // Golden balls now purchased in shop
+      spawnFloatingText(midX, midY - 30, 'DOUBLE 11!', '#f0e68c', 42);
+      spawnFloatingText(midX, midY + 5, `+${bonusPoints}`, '#7bed9f', 24);
+      spawnParticles(midX, midY, '#f0e68c');
+      spawnParticles(midX, midY, '#ffe040');
+      playMerge(10);
     } else if (tierA === tierB && tierA < TIERS.length - 1) {
       shouldMerge = true;
       newTier = tierA + 1;
@@ -981,14 +1477,13 @@ function onCollision(event) {
     if (shouldMerge) {
       merging.add(a.id);
       merging.add(b.id);
+      mergedThisFrame.push(a.id, b.id);
 
       const midX = (a.position.x + b.position.x) / 2;
       const midY = (a.position.y + b.position.y) / 2;
 
       Composite.remove(engine.world, a);
       Composite.remove(engine.world, b);
-      merging.delete(a.id);
-      merging.delete(b.id);
 
       const newCircle = createCircle(midX, midY, newTier);
       Body.setVelocity(newCircle, { x: 0, y: -3 });
@@ -1004,7 +1499,7 @@ function onCollision(event) {
         localStorage.setItem('circleMerge_highScore', highScore);
         highScoreEl.textContent = 'Best: ' + highScore;
       }
-      checkGoldenMilestone();
+      // Golden balls now purchased in shop
 
       // Floating text
       if (comboCount > 1) {
@@ -1023,24 +1518,41 @@ function onCollision(event) {
       playMerge(newTier);
     }
   }
+  // Clean up merging set after all pairs processed
+  for (const id of mergedThisFrame) merging.delete(id);
 }
 
 let gameOverTimer = 0;
 function checkGameOver() {
   if (gameOver) return;
   const bodies = Composite.allBodies(engine.world);
+  let countAbove = 0;
   let anyAbove = false;
+  const now = Date.now();
   for (const body of bodies) {
     if (body.isStatic || body.label !== 'circle') continue;
     if (body.speed > 0.5) continue; // still moving fast
+    if (now - (body.plugin.createdAt || 0) < 2000) continue; // grace period for new balls
     if (body.position.y - TIERS[body.plugin.tier].radius < 55) {
-      anyAbove = true;
-      break;
+      countAbove++;
     }
   }
+  anyAbove = countAbove > 0;
+
+  // Red glow warning when balls are in danger zone
   if (anyAbove) {
+    const intensity = Math.min(countAbove / 3, 1);
+    container.style.boxShadow = `inset 0 0 ${20 + intensity * 30}px rgba(255,0,0,${0.15 + intensity * 0.35})`;
+    container.style.borderColor = `rgba(255,${80 - intensity * 80},${80 - intensity * 80},${0.5 + intensity * 0.5})`;
+  } else {
+    container.style.boxShadow = '';
+    container.style.borderColor = '';
+  }
+
+  // Only game over when many balls are stuck above the line (truly full)
+  if (countAbove >= 3) {
     gameOverTimer++;
-    if (gameOverTimer > 90) { // ~1.5 seconds settled above line
+    if (gameOverTimer > 180) { // ~3 seconds with 3+ balls above line
       endGame();
     }
   } else {
@@ -1051,12 +1563,23 @@ function checkGameOver() {
 function endGame() {
   gameOver = true;
   canDrop = false;
+  clearSavedGame();
+  stopMusic();
   Runner.stop(runner);
   finalScoreEl.textContent = score;
+  // Award tokens
+  const earned = Math.floor(score / 10);
+  if (earned > 0) {
+    tokens += earned;
+    saveShopData();
+    updateTokenDisplays();
+  }
+  document.getElementById('tokens-earned').textContent = earned > 0 ? `+${earned} tokens` : '';
   if (score > highScore) {
     highScore = score;
     localStorage.setItem('circleMerge_highScore', highScore);
     highScoreEl.textContent = 'Best: ' + highScore;
+    syncToFirebase();
   }
   gameOverEl.classList.add('show');
   playGameOver();
@@ -1158,30 +1681,100 @@ function draw() {
       ctx.textBaseline = 'middle';
       ctx.fillText('\u2605', x, y + 1);
     } else {
-      // Normal circle
-      ctx.save();
-      ctx.shadowColor = t.glow;
-      ctx.shadowBlur = 15;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
-      grad.addColorStop(0, lighten(t.color, 60));
-      grad.addColorStop(1, t.color);
-      ctx.fillStyle = grad;
-      ctx.fill();
-      ctx.restore();
+      const skin = shopData.equipped.skin;
 
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
+      if (skin === 'emoji') {
+        // Emoji skin - gradient circle with crisp emoji on top
+        ctx.save();
+        ctx.shadowColor = t.glow;
+        ctx.shadowBlur = 15;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+        grad.addColorStop(0, lighten(t.color, 60));
+        grad.addColorStop(1, t.color);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        // Draw emoji without shadow/blur
+        ctx.save();
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.font = `${Math.max(14, r * 1.2)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(EMOJI_MAP[tier] || '⭐', x, y + 2);
+        ctx.restore();
+      } else if (skin === 'neon') {
+        // Neon skin - brighter glow, no number
+        ctx.save();
+        ctx.shadowColor = t.glow;
+        ctx.shadowBlur = 35;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        const grad = ctx.createRadialGradient(x, y, r * 0.1, x, y, r);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(0.4, lighten(t.color, 80));
+        grad.addColorStop(1, t.color);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = t.glow;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      } else if (skin === 'pastel') {
+        // Pastel skin - soft, no shadow
+        const pc = PASTEL_COLORS[tier] || '#e8e8e8';
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+        grad.addColorStop(0, '#ffffff');
+        grad.addColorStop(1, pc);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.font = `bold ${Math.max(12, r * 0.6)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(tier + 1, x, y + 1);
+      } else {
+        // Default skin
+        ctx.save();
+        ctx.shadowColor = t.glow;
+        ctx.shadowBlur = 15;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+        grad.addColorStop(0, lighten(t.color, 60));
+        grad.addColorStop(1, t.color);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.restore();
 
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
-      ctx.font = `bold ${Math.max(12, r * 0.6)}px system-ui`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(tier + 1, x, y + 1);
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.font = `bold ${Math.max(12, r * 0.6)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(tier + 1, x, y + 1);
+      }
     }
   }
 
@@ -1347,7 +1940,7 @@ canvas.addEventListener('touchend', (e) => {
   dropCircle(dropX);
 });
 
-restartBtn.addEventListener('click', init);
+restartBtn.addEventListener('click', () => { clearSavedGame(); init(); });
 
 function saveState() {
   if (!engine || gameOver) return null;
@@ -1417,10 +2010,23 @@ function restoreState(state) {
   requestAnimationFrame(draw);
 }
 
+function saveToLocalStorage() {
+  const state = saveState();
+  if (state) {
+    localStorage.setItem('circleMerge_gameState', JSON.stringify(state));
+  }
+}
+
+function clearSavedGame() {
+  localStorage.removeItem('circleMerge_gameState');
+  savedState = null;
+}
+
 function showMenu() {
   // Save game state if not game over
   if (!gameOver && engine) {
     savedState = saveState();
+    saveToLocalStorage();
   }
 
   if (runner) Runner.stop(runner);
@@ -1430,11 +2036,13 @@ function showMenu() {
   playBtn.textContent = savedState ? 'Resume' : 'Play';
   gameScreen.style.display = 'none';
   menuScreen.style.display = 'flex';
+  startMusic('menu');
 }
 
 function startGame() {
   menuScreen.style.display = 'none';
   gameScreen.style.display = 'flex';
+  startMusic('game');
   if (savedState) {
     const state = savedState;
     savedState = null;
@@ -1446,8 +2054,25 @@ function startGame() {
 
 playBtn.addEventListener('click', startGame);
 backBtn.addEventListener('click', showMenu);
+
+// Settings menu
+document.getElementById('settings-btn').addEventListener('click', () => {
+  menuScreen.style.display = 'none';
+  settingsScreen.style.display = 'flex';
+});
+document.getElementById('settings-back-btn').addEventListener('click', () => {
+  settingsScreen.style.display = 'none';
+  menuScreen.style.display = 'flex';
+});
+document.getElementById('reset-score-btn').addEventListener('click', () => {
+  if (confirm('Reset your high score to 0?')) {
+    highScore = 0;
+    localStorage.setItem('circleMerge_highScore', 0);
+    highScoreEl.textContent = 'Best: 0';
+  }
+});
 resetBtn.addEventListener('click', () => {
-  savedState = null;
+  clearSavedGame();
   init();
 });
 goldenBubbleEl.addEventListener('click', () => {
@@ -1480,6 +2105,13 @@ const soundSwitch = document.getElementById('sound-switch');
 soundSwitch.addEventListener('click', () => {
   soundEnabled = !soundEnabled;
   soundSwitch.classList.toggle('on', soundEnabled);
+  if (!soundEnabled) {
+    stopMusic();
+  } else if (gameScreen.style.display !== 'none' && !gameOver) {
+    startMusic('game');
+  } else if (menuScreen.style.display !== 'none') {
+    startMusic('menu');
+  }
 });
 
 // Info panel
@@ -1559,7 +2191,7 @@ function resetPasscode() {
 }
 
 document.getElementById('secret-btn').addEventListener('click', () => {
-  menuScreen.style.display = 'none';
+  settingsScreen.style.display = 'none';
   adminPasscodeScreen.style.display = 'flex';
   resetPasscode();
   adminError.textContent = '';
@@ -1567,7 +2199,7 @@ document.getElementById('secret-btn').addEventListener('click', () => {
 
 document.getElementById('passcode-back').addEventListener('click', () => {
   adminPasscodeScreen.style.display = 'none';
-  menuScreen.style.display = 'flex';
+  settingsScreen.style.display = 'flex';
 });
 
 document.getElementById('admin-apply').addEventListener('click', () => {
@@ -1575,7 +2207,7 @@ document.getElementById('admin-apply').addEventListener('click', () => {
   saveGoldenBalls();
   updateGoldenBubble();
   adminPanelScreen.style.display = 'none';
-  menuScreen.style.display = 'flex';
+  settingsScreen.style.display = 'flex';
 });
 
 document.getElementById('admin-reset-golden').addEventListener('click', () => {
@@ -1587,7 +2219,7 @@ document.getElementById('admin-reset-golden').addEventListener('click', () => {
 
 document.getElementById('admin-back').addEventListener('click', () => {
   adminPanelScreen.style.display = 'none';
-  menuScreen.style.display = 'flex';
+  settingsScreen.style.display = 'flex';
 });
 
 // Firebase live events
@@ -1673,11 +2305,11 @@ try {
     });
 
     const broadcastRef = db.ref('broadcast');
-    let lastBroadcastTime = 0;
+    let broadcastInitial = true;
     broadcastRef.on('value', (snapshot) => {
+      if (broadcastInitial) { broadcastInitial = false; return; }
       const data = snapshot.val();
-      if (data && data.message && data.timestamp > lastBroadcastTime) {
-        lastBroadcastTime = data.timestamp;
+      if (data && data.message) {
         showBroadcast(data.message);
       }
     });
@@ -1715,6 +2347,401 @@ event2xSwitch.addEventListener('click', () => {
     if (newVal) showEventAnnouncement();
   }
 });
+
+// Load saved game state from localStorage
+const savedGameStr = localStorage.getItem('circleMerge_gameState');
+if (savedGameStr) {
+  try { savedState = JSON.parse(savedGameStr); } catch(e) { savedState = null; }
+}
+
+// Auto-save game every 5 seconds while playing
+setInterval(() => {
+  if (!gameOver && engine && gameScreen.style.display !== 'none') {
+    saveToLocalStorage();
+  }
+}, 5000);
+
+// Save on page unload
+window.addEventListener('beforeunload', () => {
+  if (!gameOver && engine && gameScreen.style.display !== 'none') {
+    saveToLocalStorage();
+  }
+});
+
+// On mobile, move golden bubble, event banner, and info btn into utility bar
+if (window.matchMedia('(max-width: 480px)').matches) {
+  const utilBar = document.getElementById('mobile-util-bar');
+  if (utilBar) {
+    utilBar.appendChild(document.getElementById('event-banner'));
+    utilBar.appendChild(document.getElementById('golden-bubble'));
+    utilBar.appendChild(document.getElementById('info-btn'));
+  }
+}
+
+// === User Accounts & Leaderboard ===
+let currentUser = null; // { username, key }
+const authScreen = document.getElementById('auth-screen');
+const authSignedOut = document.getElementById('auth-signed-out');
+const authSignedIn = document.getElementById('auth-signed-in');
+const authUsernameDisplay = document.getElementById('auth-username-display');
+const authError = document.getElementById('auth-error');
+const leaderboardScreen = document.getElementById('leaderboard-screen');
+const leaderboardList = document.getElementById('leaderboard-list');
+const leaderboardEmpty = document.getElementById('leaderboard-empty');
+
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    hash = ((hash << 5) - hash + c) | 0;
+  }
+  return hash.toString(36);
+}
+
+function sanitizeKey(username) {
+  return username.toLowerCase().replace(/[^a-z0-9]/g, '_');
+}
+
+function updateAuthUI() {
+  if (currentUser) {
+    authSignedOut.style.display = 'none';
+    authSignedIn.style.display = 'block';
+    authUsernameDisplay.textContent = currentUser.username;
+  } else {
+    authSignedOut.style.display = 'block';
+    authSignedIn.style.display = 'none';
+  }
+}
+
+function syncToFirebase() {
+  if (!currentUser || !firebaseReady) return;
+  const db = firebase.database();
+  const userRef = db.ref('users/' + currentUser.key);
+  userRef.update({
+    highScore: highScore,
+    goldenBalls: goldenBalls,
+    lastSeen: Date.now()
+  });
+  db.ref('leaderboard/' + currentUser.key).set({
+    username: currentUser.username,
+    highScore: highScore
+  });
+}
+
+function syncFromFirebase(callback) {
+  if (!currentUser || !firebaseReady) { if (callback) callback(); return; }
+  const db = firebase.database();
+  db.ref('users/' + currentUser.key).once('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      // Take the higher high score
+      if (data.highScore > highScore) {
+        highScore = data.highScore;
+        localStorage.setItem('circleMerge_highScore', highScore);
+        highScoreEl.textContent = 'Best: ' + highScore;
+      }
+      // Take higher golden balls
+      if (data.goldenBalls > goldenBalls) {
+        goldenBalls = data.goldenBalls;
+        saveGoldenBalls();
+        updateGoldenBubble();
+      }
+    }
+    // Push local data back if it's higher
+    syncToFirebase();
+    if (callback) callback();
+  });
+}
+
+// Override score/golden updates to sync
+const _origCheckGoldenMilestone = checkGoldenMilestone;
+checkGoldenMilestone = function() {
+  _origCheckGoldenMilestone();
+  syncToFirebase();
+};
+
+function createAccount(username, passcode) {
+  const key = sanitizeKey(username);
+  if (username.length < 3 || username.length > 16) {
+    authError.textContent = 'Username must be 3-16 characters';
+    return;
+  }
+  if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+    authError.textContent = 'Letters, numbers, and _ only';
+    return;
+  }
+  if (passcode.length < 4 || passcode.length > 6 || !/^\d+$/.test(passcode)) {
+    authError.textContent = 'PIN must be 4-6 digits';
+    return;
+  }
+  if (!firebaseReady) {
+    authError.textContent = 'Not connected to server';
+    return;
+  }
+  const db = firebase.database();
+  db.ref('users/' + key).once('value', (snapshot) => {
+    if (snapshot.val()) {
+      authError.textContent = 'Username already taken';
+      return;
+    }
+    const userData = {
+      username: username,
+      passcodeHash: simpleHash(passcode),
+      highScore: highScore,
+      goldenBalls: goldenBalls,
+      lastSeen: Date.now()
+    };
+    db.ref('users/' + key).set(userData);
+    db.ref('leaderboard/' + key).set({ username: username, highScore: highScore });
+    currentUser = { username, key };
+    localStorage.setItem('circleMerge_user', JSON.stringify(currentUser));
+    updateAuthUI();
+    authScreen.style.display = 'none';
+    settingsScreen.style.display = 'flex';
+    authError.textContent = '';
+  });
+}
+
+function signIn(username, passcode) {
+  const key = sanitizeKey(username);
+  if (!username || !passcode) {
+    authError.textContent = 'Enter username and PIN';
+    return;
+  }
+  if (!firebaseReady) {
+    authError.textContent = 'Not connected to server';
+    return;
+  }
+  const db = firebase.database();
+  db.ref('users/' + key).once('value', (snapshot) => {
+    const data = snapshot.val();
+    if (!data) {
+      authError.textContent = 'Account not found';
+      return;
+    }
+    if (data.passcodeHash !== simpleHash(passcode)) {
+      authError.textContent = 'Wrong PIN';
+      return;
+    }
+    currentUser = { username: data.username, key };
+    localStorage.setItem('circleMerge_user', JSON.stringify(currentUser));
+    updateAuthUI();
+    authScreen.style.display = 'none';
+    settingsScreen.style.display = 'flex';
+    authError.textContent = '';
+    syncFromFirebase();
+  });
+}
+
+function signOut() {
+  currentUser = null;
+  localStorage.removeItem('circleMerge_user');
+  updateAuthUI();
+}
+
+// Auth event listeners
+document.getElementById('auth-signin-btn').addEventListener('click', () => {
+  settingsScreen.style.display = 'none';
+  authScreen.style.display = 'flex';
+  authError.textContent = '';
+  document.getElementById('auth-username').value = '';
+  document.getElementById('auth-passcode').value = '';
+});
+
+document.getElementById('auth-login-btn').addEventListener('click', () => {
+  signIn(document.getElementById('auth-username').value.trim(), document.getElementById('auth-passcode').value);
+});
+
+document.getElementById('auth-create-btn').addEventListener('click', () => {
+  createAccount(document.getElementById('auth-username').value.trim(), document.getElementById('auth-passcode').value);
+});
+
+document.getElementById('auth-back-btn').addEventListener('click', () => {
+  authScreen.style.display = 'none';
+  settingsScreen.style.display = 'flex';
+});
+
+document.getElementById('auth-signout-btn').addEventListener('click', () => {
+  signOut();
+});
+
+// Leaderboard
+function loadLeaderboard() {
+  if (!firebaseReady) {
+    leaderboardList.innerHTML = '';
+    leaderboardEmpty.textContent = 'Not connected to server';
+    leaderboardEmpty.style.display = 'block';
+    return;
+  }
+  const db = firebase.database();
+  db.ref('leaderboard').orderByChild('highScore').limitToLast(20).once('value', (snapshot) => {
+    const entries = [];
+    snapshot.forEach((child) => {
+      entries.push({ key: child.key, ...child.val() });
+    });
+    // Sort descending
+    entries.sort((a, b) => b.highScore - a.highScore);
+
+    if (entries.length === 0) {
+      leaderboardList.innerHTML = '';
+      leaderboardEmpty.style.display = 'block';
+      return;
+    }
+
+    leaderboardEmpty.style.display = 'none';
+    leaderboardList.innerHTML = entries.map((e, i) => {
+      const isMe = currentUser && currentUser.key === e.key;
+      return `<div class="lb-entry${isMe ? ' me' : ''}">
+        <div class="lb-rank">#${i + 1}</div>
+        <div class="lb-name">${e.username || e.key}</div>
+        <div class="lb-score">${(e.highScore || 0).toLocaleString()}</div>
+      </div>`;
+    }).join('');
+  });
+}
+
+document.getElementById('leaderboard-btn').addEventListener('click', () => {
+  menuScreen.style.display = 'none';
+  leaderboardScreen.style.display = 'flex';
+  loadLeaderboard();
+});
+
+document.getElementById('leaderboard-back-btn').addEventListener('click', () => {
+  leaderboardScreen.style.display = 'none';
+  menuScreen.style.display = 'flex';
+});
+
+// Restore user session from localStorage
+try {
+  const savedUser = localStorage.getItem('circleMerge_user');
+  if (savedUser) {
+    currentUser = JSON.parse(savedUser);
+    updateAuthUI();
+    // Sync after Firebase is ready
+    setTimeout(() => syncFromFirebase(), 1500);
+  }
+} catch(e) {}
+
+// === Shop System ===
+const shopScreen = document.getElementById('shop-screen');
+const shopTokensEl = document.getElementById('shop-tokens');
+const menuTokensEl = document.getElementById('menu-tokens');
+
+const SHOP_ITEMS = {
+  bg: {
+    sunset: { price: 500 },
+    ocean: { price: 500 },
+    galaxy: { price: 1000 },
+  },
+  skin: {
+    neon: { price: 500 },
+    pastel: { price: 500 },
+    emoji: { price: 1000 },
+  },
+  golden: {
+    golden1: { price: 10, amount: 1 },
+    golden5: { price: 50, amount: 5 },
+  }
+};
+
+function updateTokenDisplays() {
+  shopTokensEl.textContent = 'Tokens: ' + tokens;
+  menuTokensEl.textContent = 'Tokens: ' + tokens;
+}
+
+function updateShopButtons() {
+  document.querySelectorAll('.shop-buy-btn').forEach(btn => {
+    const cat = btn.dataset.category;
+    const id = btn.dataset.id;
+    if (cat === 'golden') {
+      btn.textContent = 'Buy';
+      btn.className = 'shop-buy-btn';
+      return;
+    }
+    if (shopData.equipped[cat] === id) {
+      btn.textContent = 'Equipped';
+      btn.className = 'shop-buy-btn equipped';
+    } else if (shopData.owned[cat].includes(id)) {
+      btn.textContent = 'Equip';
+      btn.className = 'shop-buy-btn owned';
+    } else {
+      btn.textContent = 'Buy';
+      btn.className = 'shop-buy-btn';
+    }
+  });
+}
+
+function applyBackground() {
+  const bgId = shopData.equipped.bg;
+  const bg = BACKGROUNDS[bgId];
+  const container = document.getElementById('game-container');
+  if (bgId === 'default') {
+    container.style.background = '#16213e';
+  } else {
+    container.style.background = bg.style;
+  }
+}
+
+function purchaseItem(cat, id) {
+  if (cat === 'golden') {
+    const item = SHOP_ITEMS.golden[id];
+    if (tokens < item.price) return;
+    tokens -= item.price;
+    goldenBalls += item.amount;
+    updateGoldenBubble();
+    saveGoldenBalls();
+    saveShopData();
+    updateTokenDisplays();
+    updateShopButtons();
+    return;
+  }
+  const item = SHOP_ITEMS[cat][id];
+  if (!item) return;
+  if (shopData.owned[cat].includes(id)) {
+    // Already owned — toggle equip/unequip
+    if (shopData.equipped[cat] === id) {
+      shopData.equipped[cat] = 'default';
+    } else {
+      shopData.equipped[cat] = id;
+    }
+    saveShopData();
+    updateShopButtons();
+    if (cat === 'bg') applyBackground();
+    return;
+  }
+  if (tokens < item.price) return;
+  tokens -= item.price;
+  shopData.owned[cat].push(id);
+  shopData.equipped[cat] = id;
+  saveShopData();
+  updateTokenDisplays();
+  updateShopButtons();
+  if (cat === 'bg') applyBackground();
+}
+
+// Shop event listeners
+document.querySelectorAll('.shop-buy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    purchaseItem(btn.dataset.category, btn.dataset.id);
+  });
+});
+
+document.getElementById('shop-btn').addEventListener('click', () => {
+  menuScreen.style.display = 'none';
+  shopScreen.style.display = 'flex';
+  updateTokenDisplays();
+  updateShopButtons();
+});
+
+document.getElementById('shop-back-btn').addEventListener('click', () => {
+  shopScreen.style.display = 'none';
+  menuScreen.style.display = 'flex';
+});
+
+// Apply saved background on load
+applyBackground();
+updateTokenDisplays();
+updateShopButtons();
 
 // Load saved golden balls and start on menu
 loadGoldenBalls();

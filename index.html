@@ -679,6 +679,14 @@
   }
   /* Phone layout: move side elements into top utility bar */
   @media (max-width: 480px) {
+    #game-screen {
+      transform: scale(0.9);
+      transform-origin: top center;
+    }
+    #menu-screen {
+      transform: scale(0.9);
+      transform-origin: top center;
+    }
     #mobile-util-bar {
       display: flex;
       align-items: center;
@@ -733,6 +741,10 @@
 
 <div id="settings-screen">
   <h2 style="color:#e0e0ff;font-size:28px;margin-bottom:24px;">Settings</h2>
+  <div class="sound-toggle" style="margin-bottom:20px;">
+    <span>Sound</span>
+    <div id="sound-switch" class="switch on"><div class="knob"></div></div>
+  </div>
   <div id="auth-status" style="margin-bottom:16px;text-align:center;">
     <div id="auth-signed-out">
       <button id="auth-signin-btn" style="padding:10px 28px;font-size:15px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Sign In / Sign Up</button>
@@ -742,13 +754,19 @@
       <button id="auth-signout-btn" style="padding:6px 18px;font-size:13px;background:rgba(255,255,255,0.1);color:#ff6b6b;border:1px solid rgba(255,80,80,0.3);border-radius:8px;cursor:pointer;">Sign Out</button>
     </div>
   </div>
-  <div class="sound-toggle">
-    <span>Sound</span>
-    <div id="sound-switch" class="switch on"><div class="knob"></div></div>
-  </div>
   <button id="reset-score-btn" style="margin-top:20px;padding:10px 24px;font-size:15px;background:rgba(255,255,255,0.1);color:#ff6b6b;border:1px solid rgba(255,80,80,0.3);border-radius:8px;cursor:pointer;">Reset High Score</button>
   <div id="secret-btn" style="margin-top:24px;padding:8px 20px;font-size:13px;background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.03);border-radius:8px;cursor:default;">Admin</div>
   <button id="settings-back-btn" style="margin-top:30px;padding:10px 28px;font-size:16px;background:rgba(255,255,255,0.1);color:#e0e0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;">Back</button>
+</div>
+
+<div id="confirm-dialog" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:300;align-items:center;justify-content:center;">
+  <div style="background:#2a2a4e;border-radius:16px;padding:28px;text-align:center;max-width:300px;box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+    <div id="confirm-text" style="color:#e0e0ff;font-size:16px;margin-bottom:20px;line-height:1.4;"></div>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button id="confirm-yes" style="padding:10px 24px;font-size:15px;background:linear-gradient(135deg,#e94560,#ff6b6b);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Yes</button>
+      <button id="confirm-cancel" style="padding:10px 24px;font-size:15px;background:rgba(255,255,255,0.1);color:#e0e0ff;border:1px solid rgba(255,255,255,0.15);border-radius:8px;cursor:pointer;">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <div id="auth-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
@@ -818,6 +836,30 @@
           <div class="shop-price">1000 tokens</div>
           <button class="shop-buy-btn" data-category="bg" data-id="galaxy">Buy</button>
         </div>
+        <div class="shop-item" data-category="bg" data-id="forest">
+          <div class="shop-preview shop-bg-preview" style="background:linear-gradient(180deg,#1b4332,#081c15);"></div>
+          <div class="shop-name">Forest</div>
+          <div class="shop-price">750 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="forest">Buy</button>
+        </div>
+        <div class="shop-item" data-category="bg" data-id="volcano">
+          <div class="shop-preview shop-bg-preview" style="background:linear-gradient(180deg,#2d1810,#0a0505);"></div>
+          <div class="shop-name">Volcano</div>
+          <div class="shop-price">1500 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="volcano">Buy</button>
+        </div>
+        <div class="shop-item" data-category="bg" data-id="dirt">
+          <div class="shop-preview shop-bg-preview" style="background:#6b4423;"></div>
+          <div class="shop-name">Dirt</div>
+          <div class="shop-price">750 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="dirt">Buy</button>
+        </div>
+        <div class="shop-item" data-category="bg" data-id="gold">
+          <div class="shop-preview shop-bg-preview" style="background:linear-gradient(135deg,#b8860b,#8b6914,#daa520);"></div>
+          <div class="shop-name">Gold</div>
+          <div class="shop-price">10000 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="gold">Buy</button>
+        </div>
       </div>
     </div>
 
@@ -873,11 +915,25 @@
     <button class="admin-btn" id="admin-apply">Apply</button>
     <button class="admin-btn secondary" id="admin-reset-golden">Reset Golden</button>
   </div>
+  <div class="admin-input-row" style="margin-top:12px;">
+    <label>Tokens:</label>
+    <input type="number" id="admin-tokens" min="0" max="99999" value="0">
+  </div>
+  <div style="display:flex;gap:10px;">
+    <button class="admin-btn" id="admin-apply-tokens">Apply Tokens</button>
+    <button class="admin-btn secondary" id="admin-reset-tokens">Reset Tokens</button>
+  </div>
   <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;width:280px;">
     <div class="admin-title" style="margin-bottom:12px;">Live Events</div>
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <label style="color:#e0e0ff;font-size:15px;">2x Points</label>
       <div id="event-2x-switch" class="switch" style="position:relative;width:44px;height:24px;background:rgba(255,255,255,0.15);border-radius:12px;cursor:pointer;transition:background 0.2s;">
+        <div class="knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:left 0.2s;pointer-events:none;"></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+      <label style="color:#e0e0ff;font-size:15px;">Tier 1 Only</label>
+      <div id="event-tier1-switch" class="switch" style="position:relative;width:44px;height:24px;background:rgba(255,255,255,0.15);border-radius:12px;cursor:pointer;transition:background 0.2s;">
         <div class="knob" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:left 0.2s;pointer-events:none;"></div>
       </div>
     </div>
@@ -905,6 +961,7 @@
   </div>
 
   <div id="game-container">
+    <canvas id="bg-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
     <div id="danger-zone"></div>
     <div id="drop-line"></div>
     <canvas id="game-canvas"></canvas>
@@ -1218,6 +1275,10 @@ const BACKGROUNDS = {
   sunset: { name: 'Sunset', style: 'linear-gradient(135deg,#e17055,#6c5ce7)' },
   ocean: { name: 'Ocean', style: 'linear-gradient(135deg,#00b894,#0c2461)' },
   galaxy: { name: 'Galaxy', style: 'radial-gradient(ellipse at 30% 20%,#2d1b69,#0a0a1a)' },
+  forest: { name: 'Forest', style: 'linear-gradient(180deg,#1b4332,#081c15)' },
+  volcano: { name: 'Volcano', style: 'linear-gradient(180deg,#2d1810,#0a0505)' },
+  dirt: { name: 'Dirt', style: '#6b4423' },
+  gold: { name: 'Gold', style: 'linear-gradient(135deg,#b8860b,#8b6914,#daa520)' },
 };
 
 // Skin definitions
@@ -1228,11 +1289,11 @@ const SKINS = {
   emoji: 'Emoji',
 };
 
-const EMOJI_MAP = ['🍒','🍊','🍋','🍏','🫐','🍇','🍑','🥝','🍓','⚪','🌟'];
+const EMOJI_MAP = ['🍒','🍊','🍋','🍏','🫐','🍇','🍑','🥝','🍓','🍉','🥥'];
 
 const PASTEL_COLORS = [
-  '#f8b4c8', '#ffd4a8', '#fff4a8', '#b8e8c8', '#b4d4f8',
-  '#d4b8f8', '#f8b8d8', '#a8e8e8', '#f8c8d8', '#e8e8e8', '#f8e8b8'
+  '#f2c4d0', '#f5d8be', '#f5ecc0', '#c4dece', '#c0d0e8',
+  '#d0c4e0', '#ecc4d4', '#bcdcdc', '#e8ccd4', '#d8d8d8', '#e8dcc0'
 ];
 
 // Combo system
@@ -1243,6 +1304,28 @@ let floatingTexts = [];
 const menuScreen = document.getElementById('menu-screen');
 const gameScreen = document.getElementById('game-screen');
 const settingsScreen = document.getElementById('settings-screen');
+const confirmDialog = document.getElementById('confirm-dialog');
+const confirmText = document.getElementById('confirm-text');
+const confirmYes = document.getElementById('confirm-yes');
+const confirmCancel = document.getElementById('confirm-cancel');
+
+function showConfirm(message, onYes) {
+  confirmText.textContent = message;
+  confirmDialog.style.display = 'flex';
+  const yesHandler = () => {
+    confirmDialog.style.display = 'none';
+    confirmYes.removeEventListener('click', yesHandler);
+    confirmCancel.removeEventListener('click', cancelHandler);
+    onYes();
+  };
+  const cancelHandler = () => {
+    confirmDialog.style.display = 'none';
+    confirmYes.removeEventListener('click', yesHandler);
+    confirmCancel.removeEventListener('click', cancelHandler);
+  };
+  confirmYes.addEventListener('click', yesHandler);
+  confirmCancel.addEventListener('click', cancelHandler);
+}
 const playBtn = document.getElementById('play-btn');
 const backBtn = document.getElementById('back-btn');
 const resetBtn = document.getElementById('reset-btn');
@@ -1324,7 +1407,7 @@ function init() {
   engine = Engine.create({ gravity: { x: 0, y: 1.8 } });
 
   // Walls
-  const wallOpts = { isStatic: true, friction: 0.3, restitution: 0.2, render: { visible: false } };
+  const wallOpts = { isStatic: true, friction: 0.8, restitution: 0.1, render: { visible: false } };
   const floor  = Bodies.rectangle(GAME_WIDTH/2, GAME_HEIGHT + 25, GAME_WIDTH + 50, 50, wallOpts);
   const wallL  = Bodies.rectangle(-25, GAME_HEIGHT/2, 50, GAME_HEIGHT + 50, wallOpts);
   const wallR  = Bodies.rectangle(GAME_WIDTH + 25, GAME_HEIGHT/2, 50, GAME_HEIGHT + 50, wallOpts);
@@ -1345,6 +1428,7 @@ function init() {
 }
 
 function randomDropTier() {
+  if (tier1OnlyActive) return 0;
   // Weighted: smaller circles more likely
   const weights = [6, 5, 3, 2, 0.5];
   const total = weights.reduce((a, b) => a + b, 0);
@@ -1379,8 +1463,10 @@ function lighten(hex, pct) {
 function createCircle(x, y, tier, isGolden) {
   const t = TIERS[tier];
   const circle = Bodies.circle(x, y, t.radius, {
-    restitution: 0.3,
-    friction: 0.5,
+    restitution: 0.2,
+    friction: 0.3,
+    frictionStatic: 0.5,
+    frictionAir: 0.03,
     density: 0.001 * (tier + 1),
     label: 'circle',
     plugin: { tier: tier, golden: !!isGolden, createdAt: Date.now() },
@@ -1483,8 +1569,9 @@ function onCollision(event) {
       merging.add(b.id);
       mergedThisFrame.push(a.id, b.id);
 
-      const midX = (a.position.x + b.position.x) / 2;
-      const midY = (a.position.y + b.position.y) / 2;
+      const newRadius = TIERS[newTier].radius;
+      const midX = Math.max(newRadius + 2, Math.min(GAME_WIDTH - newRadius - 2, (a.position.x + b.position.x) / 2));
+      const midY = Math.max(newRadius + 2, Math.min(GAME_HEIGHT - newRadius - 2, (a.position.y + b.position.y) / 2));
 
       Composite.remove(engine.world, a);
       Composite.remove(engine.world, b);
@@ -1688,30 +1775,26 @@ function draw() {
       const skin = shopData.equipped.skin;
 
       if (skin === 'emoji') {
-        // Emoji skin - gradient circle with crisp emoji on top
+        // Emoji skin - subtle circle with fully visible emoji on top
+        // Subtle outline only - no filled background so emoji stays vibrant
         ctx.save();
         ctx.shadowColor = t.glow;
-        ctx.shadowBlur = 15;
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
-        const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
-        grad.addColorStop(0, lighten(t.color, 60));
-        grad.addColorStop(1, t.color);
-        ctx.fillStyle = grad;
-        ctx.fill();
-        ctx.restore();
+        ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
         ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.stroke();
-        // Draw emoji without shadow/blur
+        ctx.restore();
+        // Draw emoji - completely isolated from any alpha/shadow state
         ctx.save();
         ctx.shadowColor = 'transparent';
         ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
         ctx.font = `${Math.max(14, r * 1.2)}px system-ui`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#ffffff';
         ctx.fillText(EMOJI_MAP[tier] || '⭐', x, y + 2);
         ctx.restore();
       } else if (skin === 'neon') {
@@ -1734,21 +1817,22 @@ function draw() {
         ctx.lineWidth = 2;
         ctx.stroke();
       } else if (skin === 'pastel') {
-        // Pastel skin - soft, no shadow
-        const pc = PASTEL_COLORS[tier] || '#e8e8e8';
+        // Pastel skin - soft matte, no shadow/glow
+        const pc = PASTEL_COLORS[tier] || '#d8d8d8';
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
-        const grad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
-        grad.addColorStop(0, '#ffffff');
-        grad.addColorStop(1, pc);
+        const grad = ctx.createRadialGradient(x - r * 0.25, y - r * 0.25, r * 0.2, x, y, r);
+        grad.addColorStop(0, pc);
+        grad.addColorStop(0.6, pc);
+        grad.addColorStop(1, pc.replace(/[0-9a-f]{2}/gi, m => Math.max(0, parseInt(m, 16) - 20).toString(16).padStart(2, '0')));
         ctx.fillStyle = grad;
         ctx.fill();
         ctx.beginPath();
         ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+        ctx.strokeStyle = 'rgba(0,0,0,0.06)';
         ctx.lineWidth = 1;
         ctx.stroke();
-        ctx.fillStyle = 'rgba(0,0,0,0.25)';
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.font = `bold ${Math.max(12, r * 0.6)}px system-ui`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -1989,7 +2073,7 @@ function restoreState(state) {
 
   engine = Engine.create({ gravity: { x: 0, y: 1.8 } });
 
-  const wallOpts = { isStatic: true, friction: 0.3, restitution: 0.2, render: { visible: false } };
+  const wallOpts = { isStatic: true, friction: 0.8, restitution: 0.1, render: { visible: false } };
   const floor  = Bodies.rectangle(GAME_WIDTH/2, GAME_HEIGHT + 25, GAME_WIDTH + 50, 50, wallOpts);
   const wallL  = Bodies.rectangle(-25, GAME_HEIGHT/2, 50, GAME_HEIGHT + 50, wallOpts);
   const wallR  = Bodies.rectangle(GAME_WIDTH + 25, GAME_HEIGHT/2, 50, GAME_HEIGHT + 50, wallOpts);
@@ -2069,11 +2153,11 @@ document.getElementById('settings-back-btn').addEventListener('click', () => {
   menuScreen.style.display = 'flex';
 });
 document.getElementById('reset-score-btn').addEventListener('click', () => {
-  if (confirm('Reset your high score to 0?')) {
+  showConfirm('Are you sure you want to reset your high score?', () => {
     highScore = 0;
     localStorage.setItem('circleMerge_highScore', 0);
     highScoreEl.textContent = 'Best: 0';
-  }
+  });
 });
 resetBtn.addEventListener('click', () => {
   clearSavedGame();
@@ -2175,6 +2259,7 @@ function enterPasscodeDigit(num) {
       adminPasscodeScreen.style.display = 'none';
       adminPanelScreen.style.display = 'flex';
       adminGoldenInput.value = goldenBalls;
+      document.getElementById('admin-tokens').value = tokens;
       resetPasscode();
     } else {
       // Wrong
@@ -2221,6 +2306,21 @@ document.getElementById('admin-reset-golden').addEventListener('click', () => {
   adminGoldenInput.value = 0;
 });
 
+document.getElementById('admin-apply-tokens').addEventListener('click', () => {
+  tokens = Math.max(0, parseInt(document.getElementById('admin-tokens').value, 10) || 0);
+  localStorage.setItem('circleMerge_tokens', tokens);
+  updateTokenDisplays();
+  adminPanelScreen.style.display = 'none';
+  settingsScreen.style.display = 'flex';
+});
+
+document.getElementById('admin-reset-tokens').addEventListener('click', () => {
+  tokens = 0;
+  localStorage.setItem('circleMerge_tokens', tokens);
+  updateTokenDisplays();
+  document.getElementById('admin-tokens').value = 0;
+});
+
 document.getElementById('admin-back').addEventListener('click', () => {
   adminPanelScreen.style.display = 'none';
   settingsScreen.style.display = 'flex';
@@ -2236,18 +2336,40 @@ const FIREBASE_CONFIG = {
 };
 
 let doublePointsActive = false;
+let tier1OnlyActive = false;
 let firebaseReady = false;
 let eventsRef = null;
 const eventBanner = document.getElementById('event-banner');
 const eventStatus = document.getElementById('event-status');
 const event2xSwitch = document.getElementById('event-2x-switch');
+const eventTier1Switch = document.getElementById('event-tier1-switch');
 
 const menuEventBanner = document.getElementById('menu-event-banner');
 const eventAnnounce = document.getElementById('event-announce');
 
 function updateEventBanner() {
-  eventBanner.style.display = doublePointsActive ? 'block' : 'none';
-  menuEventBanner.style.display = doublePointsActive ? 'block' : 'none';
+  if (doublePointsActive) {
+    eventBanner.innerHTML = '2x<br>POINTS';
+    eventBanner.style.background = 'linear-gradient(135deg, #e94560, #ff6b6b)';
+    eventBanner.style.boxShadow = '0 0 12px rgba(233,69,96,0.4)';
+    eventBanner.style.display = 'block';
+    menuEventBanner.textContent = '2x POINTS ACTIVE';
+    menuEventBanner.style.background = 'linear-gradient(135deg, #e94560, #ff6b6b)';
+    menuEventBanner.style.boxShadow = '0 0 12px rgba(233,69,96,0.4)';
+    menuEventBanner.style.display = 'block';
+  } else if (tier1OnlyActive) {
+    eventBanner.innerHTML = 'T1<br>ONLY';
+    eventBanner.style.background = 'linear-gradient(135deg, #6c5ce7, #a29bfe)';
+    eventBanner.style.boxShadow = '0 0 12px rgba(108,92,231,0.4)';
+    eventBanner.style.display = 'block';
+    menuEventBanner.textContent = 'TIER 1 ONLY ACTIVE';
+    menuEventBanner.style.background = 'linear-gradient(135deg, #6c5ce7, #a29bfe)';
+    menuEventBanner.style.boxShadow = '0 0 12px rgba(108,92,231,0.4)';
+    menuEventBanner.style.display = 'block';
+  } else {
+    eventBanner.style.display = 'none';
+    menuEventBanner.style.display = 'none';
+  }
 }
 
 function playEventSound() {
@@ -2269,9 +2391,14 @@ function playEventSound() {
   });
 }
 
-function showEventAnnouncement() {
+function showEventAnnouncement(text, color) {
+  if (text) {
+    eventAnnounce.textContent = text;
+    eventAnnounce.style.color = color || '#ff6b6b';
+    eventAnnounce.style.textShadow = `0 0 30px ${color || 'rgba(233,69,96,0.8)'}, 0 0 60px ${color || 'rgba(233,69,96,0.4)'}`;
+  }
   eventAnnounce.classList.remove('show');
-  void eventAnnounce.offsetWidth; // force reflow
+  void eventAnnounce.offsetWidth;
   eventAnnounce.classList.add('show');
   playEventSound();
   setTimeout(() => { eventAnnounce.classList.remove('show'); }, 2600);
@@ -2308,6 +2435,18 @@ try {
       if (doublePointsActive && !wasActive) showEventAnnouncement();
     });
 
+    const tier1Ref = db.ref('events/tier1Only');
+    tier1Ref.on('value', (snapshot) => {
+      const wasActive = tier1OnlyActive;
+      tier1OnlyActive = !!snapshot.val();
+      updateEventBanner();
+      eventTier1Switch.classList.toggle('on', tier1OnlyActive);
+      const knob = eventTier1Switch.querySelector('.knob');
+      knob.style.left = tier1OnlyActive ? '23px' : '3px';
+      eventTier1Switch.style.background = tier1OnlyActive ? '#6c5ce7' : 'rgba(255,255,255,0.15)';
+      if (tier1OnlyActive && !wasActive) showEventAnnouncement('TIER 1 ONLY EVENT!', '#a29bfe');
+    });
+
     const broadcastRef = db.ref('broadcast');
     let broadcastInitial = true;
     broadcastRef.on('value', (snapshot) => {
@@ -2339,16 +2478,46 @@ try {
 event2xSwitch.addEventListener('click', () => {
   const newVal = !doublePointsActive;
   if (firebaseReady) {
+    const db = firebase.database();
+    if (newVal) db.ref('events/tier1Only').set(false); // turn off other event
     eventsRef.set(newVal);
   } else {
-    // Local-only fallback when Firebase isn't configured
+    if (newVal) {
+      tier1OnlyActive = false;
+      eventTier1Switch.classList.remove('on');
+      eventTier1Switch.querySelector('.knob').style.left = '3px';
+      eventTier1Switch.style.background = 'rgba(255,255,255,0.15)';
+    }
     doublePointsActive = newVal;
     updateEventBanner();
     event2xSwitch.classList.toggle('on', newVal);
     const knob = event2xSwitch.querySelector('.knob');
     knob.style.left = newVal ? '23px' : '3px';
     event2xSwitch.style.background = newVal ? '#e94560' : 'rgba(255,255,255,0.15)';
-    if (newVal) showEventAnnouncement();
+    if (newVal) showEventAnnouncement('2x POINTS EVENT!', '#ff6b6b');
+  }
+});
+
+eventTier1Switch.addEventListener('click', () => {
+  const newVal = !tier1OnlyActive;
+  if (firebaseReady) {
+    const db = firebase.database();
+    if (newVal) db.ref('events/doublePoints').set(false); // turn off other event
+    db.ref('events/tier1Only').set(newVal);
+  } else {
+    if (newVal) {
+      doublePointsActive = false;
+      event2xSwitch.classList.remove('on');
+      event2xSwitch.querySelector('.knob').style.left = '3px';
+      event2xSwitch.style.background = 'rgba(255,255,255,0.15)';
+    }
+    tier1OnlyActive = newVal;
+    updateEventBanner();
+    eventTier1Switch.classList.toggle('on', newVal);
+    const knob = eventTier1Switch.querySelector('.knob');
+    knob.style.left = newVal ? '23px' : '3px';
+    eventTier1Switch.style.background = newVal ? '#6c5ce7' : 'rgba(255,255,255,0.15)';
+    if (newVal) showEventAnnouncement('TIER 1 ONLY EVENT!', '#a29bfe');
   }
 });
 
@@ -2559,7 +2728,9 @@ document.getElementById('auth-back-btn').addEventListener('click', () => {
 });
 
 document.getElementById('auth-signout-btn').addEventListener('click', () => {
-  signOut();
+  showConfirm('Are you sure you want to sign out?', () => {
+    signOut();
+  });
 });
 
 // Leaderboard
@@ -2629,6 +2800,10 @@ const SHOP_ITEMS = {
     sunset: { price: 500 },
     ocean: { price: 500 },
     galaxy: { price: 1000 },
+    forest: { price: 750 },
+    volcano: { price: 1500 },
+    dirt: { price: 750 },
+    gold: { price: 10000 },
   },
   skin: {
     neon: { price: 500 },
@@ -2676,6 +2851,249 @@ function applyBackground() {
     container.style.background = '#16213e';
   } else {
     container.style.background = bg.style;
+  }
+  drawBgEffects(bgId);
+}
+
+function drawBgEffects(bgId) {
+  const bgCanvas = document.getElementById('bg-canvas');
+  bgCanvas.width = GAME_WIDTH;
+  bgCanvas.height = GAME_HEIGHT;
+  const bctx = bgCanvas.getContext('2d');
+  bctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+  if (bgId === 'galaxy') {
+    // Draw twinkling stars
+    const starCount = 120;
+    for (let i = 0; i < starCount; i++) {
+      const x = Math.random() * GAME_WIDTH;
+      const y = Math.random() * GAME_HEIGHT;
+      const size = Math.random() * 2 + 0.5;
+      const alpha = Math.random() * 0.7 + 0.3;
+      bctx.beginPath();
+      bctx.arc(x, y, size, 0, Math.PI * 2);
+      bctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      bctx.fill();
+      // Add glow to some stars
+      if (Math.random() > 0.7) {
+        bctx.beginPath();
+        bctx.arc(x, y, size * 3, 0, Math.PI * 2);
+        bctx.fillStyle = `rgba(200,200,255,${alpha * 0.15})`;
+        bctx.fill();
+      }
+    }
+    // A few colored stars
+    const colors = ['#ff6b6b', '#74b9ff', '#ffeaa7', '#a29bfe'];
+    for (let i = 0; i < 8; i++) {
+      const x = Math.random() * GAME_WIDTH;
+      const y = Math.random() * GAME_HEIGHT;
+      const size = Math.random() * 1.5 + 1;
+      bctx.beginPath();
+      bctx.arc(x, y, size, 0, Math.PI * 2);
+      bctx.fillStyle = colors[i % colors.length];
+      bctx.globalAlpha = 0.6;
+      bctx.fill();
+      bctx.globalAlpha = 1;
+    }
+  } else if (bgId === 'sunset') {
+    // Draw subtle dark gray clouds
+    function drawCloud(cx, cy, w, h, alpha) {
+      bctx.globalAlpha = alpha;
+      bctx.fillStyle = '#555';
+      const parts = [
+        { dx: 0, dy: 0, rx: w * 0.5, ry: h * 0.45 },
+        { dx: -w * 0.25, dy: h * 0.05, rx: w * 0.3, ry: h * 0.35 },
+        { dx: w * 0.25, dy: 0, rx: w * 0.35, ry: h * 0.4 },
+        { dx: -w * 0.1, dy: -h * 0.12, rx: w * 0.25, ry: h * 0.3 },
+        { dx: w * 0.12, dy: -h * 0.15, rx: w * 0.2, ry: h * 0.25 },
+      ];
+      parts.forEach(p => {
+        bctx.beginPath();
+        bctx.ellipse(cx + p.dx, cy + p.dy, p.rx, p.ry, 0, 0, Math.PI * 2);
+        bctx.fill();
+      });
+      bctx.globalAlpha = 1;
+    }
+    drawCloud(90, 70, 100, 30, 0.15);
+    drawCloud(300, 45, 90, 25, 0.12);
+    drawCloud(190, 150, 110, 30, 0.1);
+    drawCloud(50, 220, 80, 25, 0.08);
+    drawCloud(330, 180, 100, 28, 0.1);
+  } else if (bgId === 'forest') {
+    // Draw evergreen trees
+    function drawTree(x, y, scale) {
+      bctx.fillStyle = '#3e2723';
+      bctx.fillRect(x - 4 * scale, y, 8 * scale, 20 * scale);
+      bctx.fillStyle = '#1b5e20';
+      for (let i = 0; i < 3; i++) {
+        const w = (30 - i * 6) * scale;
+        const h = 22 * scale;
+        const ty = y - i * 16 * scale;
+        bctx.beginPath();
+        bctx.moveTo(x, ty - h);
+        bctx.lineTo(x - w, ty);
+        bctx.lineTo(x + w, ty);
+        bctx.closePath();
+        bctx.fill();
+      }
+      // Snow on tips
+      bctx.fillStyle = 'rgba(255,255,255,0.3)';
+      bctx.beginPath();
+      bctx.moveTo(x, y - 3 * 16 * scale - 22 * scale);
+      bctx.lineTo(x - 8 * scale, y - 3 * 16 * scale - 10 * scale);
+      bctx.lineTo(x + 8 * scale, y - 3 * 16 * scale - 10 * scale);
+      bctx.closePath();
+      bctx.fill();
+    }
+    // Row of trees at bottom
+    const treePositions = [30, 80, 140, 200, 260, 320, 370];
+    treePositions.forEach((tx, i) => {
+      const scale = 0.8 + Math.random() * 0.5;
+      drawTree(tx, GAME_HEIGHT - 10 - Math.random() * 15, scale);
+    });
+    // Some background trees (smaller, darker)
+    bctx.globalAlpha = 0.4;
+    [50, 120, 190, 270, 350].forEach(tx => {
+      drawTree(tx, GAME_HEIGHT - 60 - Math.random() * 30, 0.5);
+    });
+    bctx.globalAlpha = 1;
+  } else if (bgId === 'volcano') {
+    // Draw volcano
+    bctx.fillStyle = '#4a2c17';
+    bctx.beginPath();
+    bctx.moveTo(120, GAME_HEIGHT);
+    bctx.lineTo(200, GAME_HEIGHT - 200);
+    bctx.lineTo(280, GAME_HEIGHT);
+    bctx.closePath();
+    bctx.fill();
+    // Crater
+    bctx.fillStyle = '#1a0a05';
+    bctx.beginPath();
+    bctx.ellipse(200, GAME_HEIGHT - 195, 25, 10, 0, 0, Math.PI * 2);
+    bctx.fill();
+    // Lava glow
+    bctx.fillStyle = 'rgba(255,80,20,0.6)';
+    bctx.beginPath();
+    bctx.ellipse(200, GAME_HEIGHT - 195, 18, 7, 0, 0, Math.PI * 2);
+    bctx.fill();
+    // Lava streams
+    bctx.strokeStyle = 'rgba(255,100,20,0.5)';
+    bctx.lineWidth = 3;
+    bctx.beginPath();
+    bctx.moveTo(195, GAME_HEIGHT - 185);
+    bctx.quadraticCurveTo(175, GAME_HEIGHT - 120, 160, GAME_HEIGHT);
+    bctx.stroke();
+    bctx.beginPath();
+    bctx.moveTo(210, GAME_HEIGHT - 185);
+    bctx.quadraticCurveTo(240, GAME_HEIGHT - 100, 260, GAME_HEIGHT);
+    bctx.stroke();
+    // Smoke particles
+    bctx.globalAlpha = 0.15;
+    for (let i = 0; i < 15; i++) {
+      const sx = 200 + (Math.random() - 0.5) * 40;
+      const sy = GAME_HEIGHT - 210 - Math.random() * 120;
+      const sr = 8 + Math.random() * 15;
+      bctx.beginPath();
+      bctx.arc(sx, sy, sr, 0, Math.PI * 2);
+      bctx.fillStyle = '#888';
+      bctx.fill();
+    }
+    bctx.globalAlpha = 1;
+    // Ground rocks
+    bctx.fillStyle = '#3d2010';
+    bctx.beginPath();
+    bctx.moveTo(0, GAME_HEIGHT);
+    bctx.lineTo(0, GAME_HEIGHT - 30);
+    bctx.lineTo(120, GAME_HEIGHT);
+    bctx.closePath();
+    bctx.fill();
+    bctx.beginPath();
+    bctx.moveTo(GAME_WIDTH, GAME_HEIGHT);
+    bctx.lineTo(GAME_WIDTH, GAME_HEIGHT - 25);
+    bctx.lineTo(280, GAME_HEIGHT);
+    bctx.closePath();
+    bctx.fill();
+  } else if (bgId === 'dirt') {
+    // Minecraft-style dirt block pattern
+    const blockSize = 20;
+    const cols = Math.ceil(GAME_WIDTH / blockSize);
+    const rows = Math.ceil(GAME_HEIGHT / blockSize);
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const shade = 0.85 + Math.random() * 0.3;
+        const br = Math.floor(107 * shade);
+        const bg = Math.floor(68 * shade);
+        const bb = Math.floor(35 * shade);
+        bctx.fillStyle = `rgb(${br},${bg},${bb})`;
+        bctx.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
+        // Pixel-style border
+        bctx.strokeStyle = 'rgba(0,0,0,0.15)';
+        bctx.lineWidth = 0.5;
+        bctx.strokeRect(c * blockSize, r * blockSize, blockSize, blockSize);
+      }
+    }
+    // Random darker spots (like dirt texture)
+    for (let i = 0; i < 60; i++) {
+      const dx = Math.random() * GAME_WIDTH;
+      const dy = Math.random() * GAME_HEIGHT;
+      const ds = 3 + Math.random() * 6;
+      bctx.fillStyle = 'rgba(60,35,15,0.3)';
+      bctx.fillRect(dx, dy, ds, ds);
+    }
+    // Grass-like top strip
+    bctx.fillStyle = '#4a7a2e';
+    bctx.fillRect(0, 0, GAME_WIDTH, blockSize);
+    for (let c = 0; c < cols; c++) {
+      bctx.fillStyle = `rgb(${60 + Math.floor(Math.random()*30)},${100 + Math.floor(Math.random()*40)},${30 + Math.floor(Math.random()*20)})`;
+      bctx.fillRect(c * blockSize, 0, blockSize, blockSize);
+    }
+  } else if (bgId === 'gold') {
+    // Golden bars stacked
+    function drawBar(x, y, w, h) {
+      // Bar body
+      const grad = bctx.createLinearGradient(x, y, x, y + h);
+      grad.addColorStop(0, '#ffd700');
+      grad.addColorStop(0.3, '#ffec80');
+      grad.addColorStop(0.5, '#ffd700');
+      grad.addColorStop(0.8, '#b8860b');
+      grad.addColorStop(1, '#8b6914');
+      bctx.fillStyle = grad;
+      bctx.beginPath();
+      // Trapezoid shape
+      bctx.moveTo(x + 8, y);
+      bctx.lineTo(x + w - 8, y);
+      bctx.lineTo(x + w, y + h);
+      bctx.lineTo(x, y + h);
+      bctx.closePath();
+      bctx.fill();
+      bctx.strokeStyle = 'rgba(139,105,20,0.6)';
+      bctx.lineWidth = 1;
+      bctx.stroke();
+      // Shine
+      bctx.fillStyle = 'rgba(255,255,200,0.3)';
+      bctx.fillRect(x + 12, y + 2, w * 0.4, h * 0.3);
+    }
+    // Stacked pyramid of gold bars
+    const barW = 70, barH = 20;
+    const startY = GAME_HEIGHT - 30;
+    // Bottom row - 5 bars
+    for (let i = 0; i < 5; i++) drawBar(20 + i * (barW + 5), startY, barW, barH);
+    // Second row - 4 bars
+    for (let i = 0; i < 4; i++) drawBar(57 + i * (barW + 5), startY - barH - 3, barW, barH);
+    // Third row - 3 bars
+    for (let i = 0; i < 3; i++) drawBar(95 + i * (barW + 5), startY - 2 * (barH + 3), barW, barH);
+    // Top row - 2 bars
+    for (let i = 0; i < 2; i++) drawBar(132 + i * (barW + 5), startY - 3 * (barH + 3), barW, barH);
+    // Sparkle particles
+    for (let i = 0; i < 20; i++) {
+      const sx = Math.random() * GAME_WIDTH;
+      const sy = Math.random() * GAME_HEIGHT;
+      const ss = 1 + Math.random() * 2;
+      bctx.fillStyle = `rgba(255,236,128,${0.3 + Math.random() * 0.5})`;
+      bctx.beginPath();
+      bctx.arc(sx, sy, ss, 0, Math.PI * 2);
+      bctx.fill();
+    }
   }
 }
 

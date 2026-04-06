@@ -434,7 +434,7 @@
     animation: circles-scroll 8s linear infinite;
   }
   @keyframes circles-scroll {
-    0% { transform: translateX(calc(-100% / 6)); }
+    0% { transform: translateX(var(--scroll-dist)); }
     100% { transform: translateX(0); }
   }
   .menu-circle {
@@ -3183,6 +3183,12 @@ goldenBubbleEl.addEventListener('click', () => {
     }
   }
   container.appendChild(inner);
+  // Calculate exact width of one set (5 balls + gaps) for seamless scroll
+  requestAnimationFrame(() => {
+    const totalWidth = inner.scrollWidth;
+    const oneSet = totalWidth / 6; // 6 repeats
+    inner.style.setProperty('--scroll-dist', `-${oneSet}px`);
+  });
 })();
 
 // Sound toggle

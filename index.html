@@ -431,11 +431,7 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    animation: circles-scroll 8s linear infinite;
-  }
-  @keyframes circles-scroll {
-    0% { transform: translateX(var(--scroll-dist)); }
-    100% { transform: translateX(0); }
+    will-change: transform;
   }
   .menu-circle {
     border-radius: 50%;
@@ -3183,14 +3179,21 @@ goldenBubbleEl.addEventListener('click', () => {
     }
   }
   container.appendChild(inner);
-  // Pause animation, measure one set width, then start
-  inner.style.animationPlayState = 'paused';
+  // JS-based seamless scroll
   requestAnimationFrame(() => {
-    const firstBall = inner.children[0];
-    const sixthBall = inner.children[5];
-    const oneSet = sixthBall.offsetLeft - firstBall.offsetLeft;
-    inner.style.setProperty('--scroll-dist', `-${oneSet}px`);
-    inner.style.animationPlayState = 'running';
+    const oneSet = inner.children[5].offsetLeft - inner.children[0].offsetLeft;
+    let offset = 0;
+    const speed = oneSet / 8000; // pixels per ms (matches 8s per set)
+    let lastTime = performance.now();
+    function scrollLoop(now) {
+      const dt = now - lastTime;
+      lastTime = now;
+      offset += speed * dt;
+      if (offset >= oneSet) offset -= oneSet;
+      inner.style.transform = `translateX(${offset - oneSet * 2}px)`;
+      requestAnimationFrame(scrollLoop);
+    }
+    requestAnimationFrame(scrollLoop);
   });
 })();
 

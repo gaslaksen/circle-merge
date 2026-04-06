@@ -3183,11 +3183,14 @@ goldenBubbleEl.addEventListener('click', () => {
     }
   }
   container.appendChild(inner);
-  // Calculate exact width of one set (5 balls + gaps) for seamless scroll
+  // Pause animation, measure one set width, then start
+  inner.style.animationPlayState = 'paused';
   requestAnimationFrame(() => {
-    const totalWidth = inner.scrollWidth;
-    const oneSet = totalWidth / 6; // 6 repeats
+    const firstBall = inner.children[0];
+    const sixthBall = inner.children[5];
+    const oneSet = sixthBall.offsetLeft - firstBall.offsetLeft;
     inner.style.setProperty('--scroll-dist', `-${oneSet}px`);
+    inner.style.animationPlayState = 'running';
   });
 })();
 

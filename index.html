@@ -366,6 +366,11 @@
     color: #e0e0ff;
     text-align: center;
     text-shadow: 0 0 30px rgba(160, 140, 255, 0.5);
+    animation: title-breathe 3s ease-in-out infinite;
+  }
+  @keyframes title-breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
   }
   #menu-screen .subtitle {
     color: rgba(224, 224, 255, 0.5);
@@ -417,6 +422,20 @@
     display: flex;
     gap: 8px;
     align-items: center;
+    overflow: hidden;
+    width: 100%;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+  #menu-circles-inner {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    animation: circles-scroll 8s linear infinite;
+  }
+  @keyframes circles-scroll {
+    0% { transform: translateX(calc(-100% / 6)); }
+    100% { transform: translateX(0); }
   }
   .menu-circle {
     border-radius: 50%;
@@ -521,6 +540,107 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  #powerup-bubble {
+    position: absolute;
+    top: 200px;
+    right: -60px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #ff9ecf, #e94560);
+    border: 2px solid rgba(233,69,96,0.6);
+    box-shadow: 0 0 16px rgba(233,69,96,0.5);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    font-family: system-ui, sans-serif;
+  }
+  #powerup-bubble:hover { transform: scale(1.15); box-shadow: 0 0 24px rgba(233,69,96,0.8); }
+  #powerup-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #6c5ce7;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #blender-bubble {
+    position: absolute;
+    top: 260px;
+    right: -60px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #74b9ff, #0984e3);
+    border: 2px solid rgba(9,132,227,0.6);
+    box-shadow: 0 0 16px rgba(9,132,227,0.5);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-weight: bold;
+    font-size: 18px;
+    color: white;
+    font-family: system-ui, sans-serif;
+  }
+  #blender-bubble:hover { transform: scale(1.15); box-shadow: 0 0 24px rgba(9,132,227,0.8); }
+  #blender-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #00b894;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #water-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    pointer-events: none;
+    z-index: 5;
+    background: linear-gradient(180deg, rgba(116,185,255,0.15) 0%, rgba(9,132,227,0.35) 50%, rgba(0,100,200,0.45) 100%);
+    border-top: none;
+    box-sizing: border-box;
+  }
+  #water-overlay.filling {
+    border-top: 3px solid rgba(116,185,255,0.5);
+    animation: water-rise 1.2s ease-out forwards;
+  }
+  #water-overlay.draining {
+    animation: water-drain 1s ease-in forwards;
+  }
+  @keyframes water-rise {
+    0% { height: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    100% { height: 100%; opacity: 1; }
+  }
+  @keyframes water-drain {
+    0% { height: 100%; opacity: 1; }
+    80% { opacity: 0.6; }
+    100% { height: 0%; opacity: 0; }
   }
   #drop-line {
     position: absolute;
@@ -703,6 +823,22 @@
       height: 36px;
       font-size: 12px;
     }
+    #powerup-bubble {
+      position: relative !important;
+      top: auto;
+      right: auto;
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+    }
+    #blender-bubble {
+      position: relative !important;
+      top: auto;
+      right: auto;
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+    }
     #info-btn {
       position: static !important;
       width: 28px;
@@ -727,6 +863,7 @@
 <body>
 
 <div id="menu-screen">
+  <div style="color:#fdcb6e;font-size:18px;font-weight:700;letter-spacing:1px;margin-bottom:-20px;">BIG UPDATE!</div>
   <h1>Circle Merge</h1>
   <div class="subtitle">Drop, match, and merge!</div>
   <div id="high-score">Best: 0</div>
@@ -738,6 +875,7 @@
   <button id="settings-btn">Settings</button>
   <div id="menu-event-banner">2x POINTS ACTIVE</div>
 </div>
+<div id="version-label" style="position:fixed;bottom:12px;left:14px;font-size:16px;color:rgba(255,255,255,0.6);z-index:1;pointer-events:none;">v1.3</div>
 
 <div id="settings-screen">
   <h2 style="color:#e0e0ff;font-size:28px;margin-bottom:24px;">Settings</h2>
@@ -792,24 +930,33 @@
   <div style="width:100%;max-width:380px;padding:20px 16px 40px;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <h2 style="color:#e0e0ff;font-size:26px;margin:0;">Shop</h2>
-      <div id="shop-tokens" style="color:#fdcb6e;font-size:16px;font-weight:700;">Tokens: 0</div>
+      <div id="shop-tokens" style="color:#fdcb6e;font-size:16px;font-weight:700;transition:color 0.3s,transform 0.3s;">Tokens: 0</div>
     </div>
 
-    <!-- Golden Balls Section -->
-    <div class="shop-section-title">Golden Balls</div>
+    <!-- Power-Ups Section -->
+    <div class="shop-section-title">Power-Ups</div>
     <div class="shop-shelf">
       <div class="shop-shelf-board">
         <div class="shop-item" data-category="golden" data-id="golden1">
           <div class="shop-preview" style="font-size:32px;">&#9733;</div>
-          <div class="shop-name">1 Golden Ball</div>
-          <div class="shop-price">10 tokens</div>
-          <button class="shop-buy-btn" data-category="golden" data-id="golden1">Buy</button>
+          <div class="shop-name">Golden Ball</div>
+          <div class="shop-price">100 tokens</div>
+          <button class="shop-buy-btn" data-category="golden" data-id="golden1" style="margin-bottom:6px;">Buy 1</button>
+          <button class="shop-buy-btn" data-category="golden" data-id="golden5">Buy 5 — 450</button>
         </div>
-        <div class="shop-item" data-category="golden" data-id="golden5">
-          <div class="shop-preview" style="font-size:32px;">&#9733;x5</div>
-          <div class="shop-name">5 Golden Balls</div>
-          <div class="shop-price">50 tokens</div>
-          <button class="shop-buy-btn" data-category="golden" data-id="golden5">Buy</button>
+        <div class="shop-item" data-category="powerup" data-id="blender">
+          <div class="shop-preview" style="font-size:28px;">🌊</div>
+          <div class="shop-name">Blender</div>
+          <div class="shop-price">300 tokens</div>
+          <button class="shop-buy-btn" data-category="powerup" data-id="blender" style="margin-bottom:6px;">Buy 1</button>
+          <button class="shop-buy-btn" data-category="powerup" data-id="blender5">Buy 5 — 1350</button>
+        </div>
+        <div class="shop-item" data-category="powerup" data-id="merge12">
+          <div class="shop-preview" style="font-size:28px;">💥</div>
+          <div class="shop-name">Merge Small</div>
+          <div class="shop-price">450 tokens</div>
+          <button class="shop-buy-btn" data-category="powerup" data-id="merge12" style="margin-bottom:6px;">Buy 1</button>
+          <button class="shop-buy-btn" data-category="powerup" data-id="merge12x5">Buy 5 — 2025</button>
         </div>
       </div>
     </div>
@@ -818,41 +965,47 @@
     <div class="shop-section-title">Backgrounds</div>
     <div class="shop-shelf">
       <div class="shop-shelf-board">
+        <div class="shop-item" data-category="bg" data-id="dirt">
+          <div class="shop-preview shop-bg-preview" style="background:#6b4423;"></div>
+          <div class="shop-name">Dirt</div>
+          <div class="shop-price">500 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="dirt">Buy</button>
+        </div>
         <div class="shop-item" data-category="bg" data-id="sunset">
           <div class="shop-preview shop-bg-preview" style="background:linear-gradient(135deg,#e17055,#6c5ce7);"></div>
           <div class="shop-name">Sunset</div>
-          <div class="shop-price">500 tokens</div>
+          <div class="shop-price">1000 tokens</div>
           <button class="shop-buy-btn" data-category="bg" data-id="sunset">Buy</button>
         </div>
         <div class="shop-item" data-category="bg" data-id="ocean">
           <div class="shop-preview shop-bg-preview" style="background:linear-gradient(135deg,#00b894,#0c2461);"></div>
           <div class="shop-name">Ocean</div>
-          <div class="shop-price">500 tokens</div>
-          <button class="shop-buy-btn" data-category="bg" data-id="ocean">Buy</button>
-        </div>
-        <div class="shop-item" data-category="bg" data-id="galaxy">
-          <div class="shop-preview shop-bg-preview" style="background:radial-gradient(ellipse at 30% 20%,#2d1b69,#0a0a1a);"></div>
-          <div class="shop-name">Galaxy</div>
           <div class="shop-price">1000 tokens</div>
-          <button class="shop-buy-btn" data-category="bg" data-id="galaxy">Buy</button>
+          <button class="shop-buy-btn" data-category="bg" data-id="ocean">Buy</button>
         </div>
         <div class="shop-item" data-category="bg" data-id="forest">
           <div class="shop-preview shop-bg-preview" style="background:linear-gradient(180deg,#1b4332,#081c15);"></div>
           <div class="shop-name">Forest</div>
-          <div class="shop-price">750 tokens</div>
+          <div class="shop-price">1500 tokens</div>
           <button class="shop-buy-btn" data-category="bg" data-id="forest">Buy</button>
+        </div>
+        <div class="shop-item" data-category="bg" data-id="galaxy">
+          <div class="shop-preview shop-bg-preview" style="background:radial-gradient(ellipse at 30% 20%,#2d1b69,#0a0a1a);"></div>
+          <div class="shop-name">Galaxy</div>
+          <div class="shop-price">2000 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="galaxy">Buy</button>
         </div>
         <div class="shop-item" data-category="bg" data-id="volcano">
           <div class="shop-preview shop-bg-preview" style="background:linear-gradient(180deg,#2d1810,#0a0505);"></div>
           <div class="shop-name">Volcano</div>
-          <div class="shop-price">1500 tokens</div>
+          <div class="shop-price">3000 tokens</div>
           <button class="shop-buy-btn" data-category="bg" data-id="volcano">Buy</button>
         </div>
-        <div class="shop-item" data-category="bg" data-id="dirt">
-          <div class="shop-preview shop-bg-preview" style="background:#6b4423;"></div>
-          <div class="shop-name">Dirt</div>
-          <div class="shop-price">750 tokens</div>
-          <button class="shop-buy-btn" data-category="bg" data-id="dirt">Buy</button>
+        <div class="shop-item" data-category="bg" data-id="hologram">
+          <div class="shop-preview shop-bg-preview" style="background:#1a1a2e;position:relative;overflow:hidden;"><svg viewBox="0 0 40 40" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.4;"><polygon points="20,8 28,14 28,26 20,32 12,26 12,14" fill="none" stroke="#60c0ff" stroke-width="0.8"/><polygon points="5,2 9,5 9,11 5,14 1,11 1,5" fill="none" stroke="#60c0ff" stroke-width="0.5"/><polygon points="35,28 39,31 39,37 35,40 31,37 31,31" fill="none" stroke="#60c0ff" stroke-width="0.5"/></svg></div>
+          <div class="shop-name">Hologram</div>
+          <div class="shop-price">5000 tokens</div>
+          <button class="shop-buy-btn" data-category="bg" data-id="hologram">Buy</button>
         </div>
         <div class="shop-item" data-category="bg" data-id="gold">
           <div class="shop-preview shop-bg-preview" style="background:linear-gradient(135deg,#b8860b,#8b6914,#daa520);"></div>
@@ -867,23 +1020,65 @@
     <div class="shop-section-title">Ball Skins</div>
     <div class="shop-shelf">
       <div class="shop-shelf-board">
-        <div class="shop-item" data-category="skin" data-id="neon">
-          <div class="shop-preview" style="font-size:11px;color:#0ff;text-shadow:0 0 10px #0ff;">&#11044; NEON</div>
-          <div class="shop-name">Neon</div>
+        <div class="shop-item" data-category="skin" data-id="dirt">
+          <div class="shop-preview" style="font-size:20px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:linear-gradient(180deg,#5b8731 30%,#8b6914 30%,#6b4513);border:2px solid #222;"></span></div>
+          <div class="shop-name">Dirt</div>
           <div class="shop-price">500 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="dirt">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="neon">
+          <div class="shop-preview" style="font-size:20px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#0ff);box-shadow:0 0 8px #0ff;"></span></div>
+          <div class="shop-name">Neon</div>
+          <div class="shop-price">1000 tokens</div>
           <button class="shop-buy-btn" data-category="skin" data-id="neon">Buy</button>
         </div>
         <div class="shop-item" data-category="skin" data-id="pastel">
-          <div class="shop-preview" style="font-size:11px;color:#f8b4c8;">&#11044; Pastel</div>
+          <div class="shop-preview" style="font-size:20px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#f8b4c8);"></span></div>
           <div class="shop-name">Pastel</div>
-          <div class="shop-price">500 tokens</div>
+          <div class="shop-price">1000 tokens</div>
           <button class="shop-buy-btn" data-category="skin" data-id="pastel">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="glass">
+          <div class="shop-preview" style="font-size:20px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,0.6),rgba(100,180,255,0.3));border:1px solid rgba(255,255,255,0.4);"></span></div>
+          <div class="shop-name">Glass</div>
+          <div class="shop-price">1200 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="glass">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="shapes">
+          <div class="shop-preview" style="font-size:20px;color:#e0e0ff;">▲ ◆ ⬡</div>
+          <div class="shop-name">Shapes</div>
+          <div class="shop-price">1500 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="shapes">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="wood">
+          <div class="shop-preview" style="font-size:20px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#c68642,#8b5e3c);border:1px solid #6b3a1f;"></span></div>
+          <div class="shop-name">Wood</div>
+          <div class="shop-price">1500 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="wood">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="candy">
+          <div class="shop-preview" style="font-size:20px;">🍬🍭🍿</div>
+          <div class="shop-name">Candy</div>
+          <div class="shop-price">1750 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="candy">Buy</button>
         </div>
         <div class="shop-item" data-category="skin" data-id="emoji">
           <div class="shop-preview" style="font-size:20px;">🍒🍊🍋</div>
           <div class="shop-name">Emoji</div>
-          <div class="shop-price">1000 tokens</div>
+          <div class="shop-price">2000 tokens</div>
           <button class="shop-buy-btn" data-category="skin" data-id="emoji">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="hologram">
+          <div class="shop-preview" style="font-size:20px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#a0e8ff,#60c0ff,#80d0ff);border:1px solid rgba(160,232,255,0.6);box-shadow:0 0 8px rgba(96,192,255,0.5);"></span></div>
+          <div class="shop-name">Hologram</div>
+          <div class="shop-price">5000 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="hologram">Buy</button>
+        </div>
+        <div class="shop-item" data-category="skin" data-id="gold">
+          <div class="shop-preview" style="font-size:20px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#fff8c0,#daa520,#b8860b);border:2px solid #f0e68c;box-shadow:0 0 8px rgba(218,165,32,0.6);"></span></div>
+          <div class="shop-name">Gold</div>
+          <div class="shop-price">10000 tokens</div>
+          <button class="shop-buy-btn" data-category="skin" data-id="gold">Buy</button>
         </div>
       </div>
     </div>
@@ -964,7 +1159,8 @@
     <canvas id="bg-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
     <div id="danger-zone"></div>
     <div id="drop-line"></div>
-    <canvas id="game-canvas"></canvas>
+    <canvas id="game-canvas" style="position:relative;z-index:1;"></canvas>
+    <div id="water-overlay"></div>
     <div id="game-over">
       <h2>Game Over</h2>
       <p>Score: <span id="final-score">0</span></p>
@@ -974,6 +1170,12 @@
   </div>
   <div id="golden-bubble">
     <span id="golden-count">0</span>
+  </div>
+  <div id="powerup-bubble" style="display:none;">
+    <span id="powerup-count">0</span>
+  </div>
+  <div id="blender-bubble" style="display:none;">
+    <span id="blender-count">0</span>
   </div>
   <button id="info-btn">i</button>
   <div id="info-panel"></div>
@@ -1262,8 +1464,21 @@ let savedState = null;
 let tokens = parseInt(localStorage.getItem('circleMerge_tokens'), 10) || 0;
 let shopData = JSON.parse(localStorage.getItem('circleMerge_shopData') || 'null') || {
   owned: { bg: ['default'], skin: ['default'] },
-  equipped: { bg: 'default', skin: 'default' }
+  equipped: { bg: 'default', skin: 'default' },
+  powerups: { merge12: 0, blender: 0 }
 };
+if (!shopData.powerups) shopData.powerups = { merge12: 0, blender: 0 };
+if (shopData.powerups.blender === undefined) shopData.powerups.blender = 0;
+// Fix corrupted shopData structure
+if (!shopData.owned || !Array.isArray(shopData.owned.bg)) {
+  shopData.owned = { bg: ['default'], skin: ['default'] };
+}
+if (!Array.isArray(shopData.owned.skin)) {
+  shopData.owned.skin = ['default'];
+}
+if (!shopData.equipped || typeof shopData.equipped.bg !== 'string') {
+  shopData.equipped = { bg: 'default', skin: 'default' };
+}
 function saveShopData() {
   localStorage.setItem('circleMerge_shopData', JSON.stringify(shopData));
   localStorage.setItem('circleMerge_tokens', tokens);
@@ -1278,6 +1493,7 @@ const BACKGROUNDS = {
   forest: { name: 'Forest', style: 'linear-gradient(180deg,#1b4332,#081c15)' },
   volcano: { name: 'Volcano', style: 'linear-gradient(180deg,#2d1810,#0a0505)' },
   dirt: { name: 'Dirt', style: '#6b4423' },
+  hologram: { name: 'Hologram', style: '#1a1a2e' },
   gold: { name: 'Gold', style: 'linear-gradient(135deg,#b8860b,#8b6914,#daa520)' },
 };
 
@@ -1290,6 +1506,149 @@ const SKINS = {
 };
 
 const EMOJI_MAP = ['🍒','🍊','🍋','🍏','🫐','🍇','🍑','🥝','🍓','🍉','🥥'];
+const SHAPES_MAP = ['▲','◆','⬠','⬡','✦','⬢','◈','✶','⊛','❖','✪'];
+const SHAPES_OFFSET = [0.08, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; // vertical offset as fraction of radius
+
+// Candy skin: all custom canvas-drawn
+const CANDY_MAP = ['candy','lollipop','popcorn','cookie','donut','cupcake','cake','chocolate','icecream','cotton','gummy'];
+
+function drawCandy(ctx, x, y, r, type) {
+  ctx.save();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  const s = r * 0.42;
+  if (type === 'candy') {
+    ctx.beginPath();
+    ctx.ellipse(x, y, s*0.9, s*0.55, 0, 0, Math.PI*2);
+    const cg = ctx.createLinearGradient(x-s, y, x+s, y);
+    cg.addColorStop(0, '#ff4466'); cg.addColorStop(0.3, '#ff6688');
+    cg.addColorStop(0.5, '#ff4466'); cg.addColorStop(0.7, '#ff6688'); cg.addColorStop(1, '#ff4466');
+    ctx.fillStyle = cg; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = Math.max(1, s*0.08); ctx.globalAlpha = 0.5;
+    for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(x+i*s*0.25, y-s*0.55); ctx.lineTo(x+i*s*0.25, y+s*0.55); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+    ctx.beginPath(); ctx.moveTo(x-s*0.9,y-s*0.15); ctx.lineTo(x-s*1.5,y-s*0.35); ctx.lineTo(x-s*1.4,y+s*0.05); ctx.lineTo(x-s*0.9,y+s*0.15); ctx.fillStyle='#ff8899'; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x+s*0.9,y-s*0.15); ctx.lineTo(x+s*1.5,y-s*0.35); ctx.lineTo(x+s*1.4,y+s*0.05); ctx.lineTo(x+s*0.9,y+s*0.15); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x-s*0.2,y-s*0.25,s*0.35,s*0.1,-0.2,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.fill();
+  } else if (type === 'lollipop') {
+    ctx.strokeStyle='#d4a574'; ctx.lineWidth=Math.max(2,s*0.12); ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x,y+s*0.4); ctx.lineTo(x,y+s*1.7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x,y-s*0.15,s*0.85,0,Math.PI*2); ctx.fillStyle='#ffee44'; ctx.fill();
+    ctx.strokeStyle='#ff4488'; ctx.lineWidth=Math.max(1.5,s*0.12); ctx.beginPath();
+    for (let a=0; a<Math.PI*6; a+=0.15) { const sr=a/(Math.PI*6)*s*0.75; const sx=x+Math.cos(a)*sr; const sy=y-s*0.15+Math.sin(a)*sr; if(a===0) ctx.moveTo(sx,sy); else ctx.lineTo(sx,sy); }
+    ctx.stroke();
+    ctx.beginPath(); ctx.arc(x-s*0.25,y-s*0.45,s*0.15,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fill();
+  } else if (type === 'popcorn') {
+    ctx.beginPath(); ctx.moveTo(x-s*0.55,y+s*0.1); ctx.lineTo(x-s*0.45,y+s*1.0); ctx.lineTo(x+s*0.45,y+s*1.0); ctx.lineTo(x+s*0.55,y+s*0.1); ctx.closePath(); ctx.fillStyle='#dd2233'; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=Math.max(1,s*0.06);
+    for (let i=-1;i<=1;i++) { ctx.beginPath(); ctx.moveTo(x+i*s*0.22,y+s*0.1); ctx.lineTo(x+i*s*0.18,y+s*1.0); ctx.stroke(); }
+    [{dx:0,dy:-0.4},{dx:-0.35,dy:-0.25},{dx:0.35,dy:-0.25},{dx:-0.2,dy:-0.55},{dx:0.2,dy:-0.55},{dx:0,dy:-0.7}].forEach(p => {
+      ctx.beginPath(); ctx.arc(x+p.dx*s,y+p.dy*s,s*0.25,0,Math.PI*2); ctx.fillStyle='#fff8d0'; ctx.fill();
+      ctx.beginPath(); ctx.arc(x+p.dx*s-s*0.05,y+p.dy*s-s*0.06,s*0.08,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fill();
+    });
+  } else if (type === 'cookie') {
+    ctx.beginPath(); ctx.arc(x,y,s*0.85,0,Math.PI*2);
+    const ckg=ctx.createRadialGradient(x-s*0.2,y-s*0.2,s*0.1,x,y,s*0.85);
+    ckg.addColorStop(0,'#e8c56a'); ckg.addColorStop(0.7,'#d4a040'); ckg.addColorStop(1,'#b8862d');
+    ctx.fillStyle=ckg; ctx.fill();
+    [{dx:-0.3,dy:-0.3},{dx:0.25,dy:-0.15},{dx:-0.1,dy:0.3},{dx:0.35,dy:0.3},{dx:0,dy:0},{dx:-0.4,dy:0.05},{dx:0.15,dy:-0.5}].forEach(c => {
+      ctx.beginPath(); ctx.ellipse(x+c.dx*s,y+c.dy*s,s*0.12,s*0.1,c.dx,0,Math.PI*2); ctx.fillStyle='#4a2810'; ctx.fill();
+    });
+    ctx.beginPath(); ctx.ellipse(x-s*0.2,y-s*0.35,s*0.25,s*0.1,-0.3,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.fill();
+  } else if (type === 'donut') {
+    // Draw donut as a ring using clipping (hole shows background through)
+    ctx.save();
+    // Clip to ring shape: outer circle minus inner circle
+    ctx.beginPath();
+    ctx.arc(x,y,s*0.85,0,Math.PI*2);
+    ctx.arc(x,y,s*0.28,0,Math.PI*2, true); // counter-clockwise = cut out
+    ctx.clip();
+    // Dough body
+    ctx.beginPath(); ctx.arc(x,y,s*0.85,0,Math.PI*2); ctx.fillStyle='#d4954a'; ctx.fill();
+    // Pink frosting - top half with wavy drip edge
+    ctx.beginPath();
+    ctx.arc(x,y,s*0.87,Math.PI+0.15,Math.PI*2-0.15);
+    for (let a=Math.PI*2-0.15; a>=Math.PI+0.15; a-=0.1) {
+      const drip = Math.sin(a*4)*s*0.08 + s*0.05;
+      ctx.lineTo(x+Math.cos(a)*s*0.87, y+Math.sin(a)*s*0.87+drip);
+    }
+    ctx.closePath(); ctx.fillStyle='#ff88bb'; ctx.fill();
+    // Sprinkles on frosting
+    const sprC=['#ff4444','#44ff44','#4444ff','#ffff44','#ff44ff','#ff8800'];
+    for (let i=0;i<10;i++) {
+      const a=Math.PI*1.15+(i/10)*Math.PI*0.7;
+      const sr=s*0.45+(i%3)*s*0.15;
+      ctx.save(); ctx.translate(x+Math.cos(a)*sr,y+Math.sin(a)*sr); ctx.rotate(a+i*0.7);
+      ctx.fillStyle=sprC[i%sprC.length]; ctx.fillRect(-s*0.07,-s*0.025,s*0.14,s*0.05);
+      ctx.restore();
+    }
+    // Highlight
+    ctx.beginPath(); ctx.ellipse(x-s*0.2,y-s*0.5,s*0.2,s*0.08,-0.3,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.fill();
+    ctx.restore(); // end ring clip
+  } else if (type === 'cupcake') {
+    ctx.beginPath(); ctx.moveTo(x-s*0.6,y+s*0.1); ctx.lineTo(x-s*0.45,y+s*0.9); ctx.lineTo(x+s*0.45,y+s*0.9); ctx.lineTo(x+s*0.6,y+s*0.1); ctx.closePath(); ctx.fillStyle='#e8a040'; ctx.fill();
+    ctx.strokeStyle='#c88030'; ctx.lineWidth=Math.max(0.5,s*0.03);
+    for (let i=-2;i<=2;i++) { ctx.beginPath(); ctx.moveTo(x+i*s*0.15-s*0.02,y+s*0.1); ctx.lineTo(x+i*s*0.12,y+s*0.9); ctx.stroke(); }
+    ['#ff88bb','#ffaacc','#ff99bb'].forEach((c,i) => { ctx.beginPath(); ctx.ellipse(x,y-s*0.05-(2-i)*s*0.22,s*0.55-(2-i)*s*0.12,s*0.2,0,0,Math.PI*2); ctx.fillStyle=c; ctx.fill(); });
+    ctx.beginPath(); ctx.arc(x,y-s*0.65,s*0.15,0,Math.PI*2); ctx.fillStyle='#ff2244'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x-s*0.04,y-s*0.7,s*0.04,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fill();
+  } else if (type === 'cake') {
+    ctx.beginPath(); ctx.moveTo(x-s*0.7,y+s*0.1); ctx.lineTo(x-s*0.7,y+s*0.7); ctx.lineTo(x+s*0.7,y+s*0.7); ctx.lineTo(x+s*0.7,y+s*0.1); ctx.closePath(); ctx.fillStyle='#f5deb3'; ctx.fill();
+    ctx.strokeStyle='#ff6688'; ctx.lineWidth=Math.max(1.5,s*0.06); ctx.beginPath(); ctx.moveTo(x-s*0.7,y+s*0.4); ctx.lineTo(x+s*0.7,y+s*0.4); ctx.stroke();
+    ctx.beginPath(); ctx.rect(x-s*0.75,y-s*0.05,s*1.5,s*0.15); ctx.fillStyle='#ffccdd'; ctx.fill();
+    for (let i=0;i<3;i++) { ctx.beginPath(); ctx.ellipse(x-s*0.4+i*s*0.4,y+s*0.2,s*0.08,s*0.15,0,0,Math.PI*2); ctx.fillStyle='#ffccdd'; ctx.fill(); }
+    ctx.beginPath(); ctx.arc(x,y-s*0.25,s*0.2,0,Math.PI*2); ctx.fillStyle='#ff3344'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x-s*0.05,y-s*0.3,s*0.05,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.fill();
+  } else if (type === 'chocolate') {
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x-s*0.7,y-s*0.5,s*1.4,s*1.0,s*0.1); else { ctx.rect(x-s*0.7,y-s*0.5,s*1.4,s*1.0); }
+    const chG=ctx.createLinearGradient(x,y-s*0.5,x,y+s*0.5);
+    chG.addColorStop(0,'#8b4513'); chG.addColorStop(0.5,'#6b3410'); chG.addColorStop(1,'#5a2d0c');
+    ctx.fillStyle=chG; ctx.fill();
+    ctx.strokeStyle='#4a2008'; ctx.lineWidth=Math.max(0.5,s*0.04);
+    ctx.beginPath(); ctx.moveTo(x-s*0.65,y); ctx.lineTo(x+s*0.65,y); ctx.stroke();
+    for (let i=-1;i<=1;i+=2) { ctx.beginPath(); ctx.moveTo(x+i*s*0.25,y-s*0.45); ctx.lineTo(x+i*s*0.25,y+s*0.45); ctx.stroke(); }
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x-s*0.6,y-s*0.45,s*0.5,s*0.35,s*0.05); else ctx.rect(x-s*0.6,y-s*0.45,s*0.5,s*0.35);
+    ctx.fillStyle='rgba(255,255,255,0.15)'; ctx.fill();
+  } else if (type === 'icecream') {
+    ctx.beginPath(); ctx.moveTo(x-s*0.45,y+s*0.1); ctx.lineTo(x,y+s*1.3); ctx.lineTo(x+s*0.45,y+s*0.1); ctx.closePath(); ctx.fillStyle='#d4954a'; ctx.fill();
+    ctx.strokeStyle='#b87830'; ctx.lineWidth=Math.max(0.5,s*0.03);
+    ctx.beginPath(); ctx.moveTo(x-s*0.35,y+s*0.2); ctx.lineTo(x+s*0.15,y+s*1.0); ctx.moveTo(x+s*0.35,y+s*0.2); ctx.lineTo(x-s*0.15,y+s*1.0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x-s*0.2,y-s*0.1,s*0.38,0,Math.PI*2); ctx.fillStyle='#ff99bb'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x+s*0.2,y-s*0.1,s*0.38,0,Math.PI*2); ctx.fillStyle='#88ddff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y-s*0.45,s*0.35,0,Math.PI*2); ctx.fillStyle='#fffdd0'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x-s*0.1,y-s*0.55,s*0.08,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fill();
+  } else if (type === 'cotton') {
+    ctx.strokeStyle='#d4a574'; ctx.lineWidth=Math.max(2,s*0.1); ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x,y+s*0.3); ctx.lineTo(x,y+s*1.6); ctx.stroke();
+    [{dx:0,dy:-0.3,rx:0.7,ry:0.5,c:'#ff9ecf'},{dx:-0.35,dy:0,rx:0.5,ry:0.45,c:'#c8a0ff'},{dx:0.35,dy:-0.1,rx:0.5,ry:0.4,c:'#ff80bf'},{dx:0,dy:0.15,rx:0.55,ry:0.4,c:'#d8b0ff'},{dx:-0.15,dy:-0.5,rx:0.4,ry:0.3,c:'#ffb0d8'},{dx:0.2,dy:-0.4,rx:0.35,ry:0.3,c:'#e0a0ff'}].forEach(p => {
+      ctx.beginPath(); ctx.ellipse(x+p.dx*s,y+p.dy*s,p.rx*s,p.ry*s,0,0,Math.PI*2); ctx.fillStyle=p.c; ctx.fill();
+    });
+    ctx.beginPath(); ctx.ellipse(x-s*0.2,y-s*0.45,s*0.2,s*0.12,-0.3,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.45)'; ctx.fill();
+  } else if (type === 'gummy') {
+    ctx.beginPath(); ctx.ellipse(x,y+s*0.15,s*0.7,s*0.85,0,0,Math.PI*2);
+    const gg=ctx.createRadialGradient(x-s*0.2,y-s*0.2,s*0.1,x,y,s*1.1);
+    gg.addColorStop(0,'#ff4040'); gg.addColorStop(0.5,'#e02020'); gg.addColorStop(1,'#a01010');
+    ctx.fillStyle=gg; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y-s*0.65,s*0.45,0,Math.PI*2); ctx.fillStyle='#e83030'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x-s*0.35,y-s*1.0,s*0.18,0,Math.PI*2); ctx.fillStyle='#e83030'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x+s*0.35,y-s*1.0,s*0.18,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x-s*0.75,y+s*0.1,s*0.2,s*0.35,0.3,0,Math.PI*2); ctx.fillStyle='#d02828'; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x+s*0.75,y+s*0.1,s*0.2,s*0.35,-0.3,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x-s*0.3,y+s*0.9,s*0.22,s*0.3,0.1,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x+s*0.3,y+s*0.9,s*0.22,s*0.3,-0.1,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.beginPath(); ctx.arc(x-s*0.15,y-s*0.7,s*0.1,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+s*0.15,y-s*0.7,s*0.1,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#222';
+    ctx.beginPath(); ctx.arc(x-s*0.15,y-s*0.68,s*0.05,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+s*0.15,y-s*0.68,s*0.05,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x-s*0.15,y-s*0.05,s*0.25,s*0.15,-0.2,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fill();
+  }
+  ctx.restore();
+}
 
 const PASTEL_COLORS = [
   '#f2c4d0', '#f5d8be', '#f5ecc0', '#c4dece', '#c0d0e8',
@@ -1302,6 +1661,7 @@ let comboTimer = null;
 let floatingTexts = [];
 
 const menuScreen = document.getElementById('menu-screen');
+const versionLabel = document.getElementById('version-label');
 const gameScreen = document.getElementById('game-screen');
 const settingsScreen = document.getElementById('settings-screen');
 const confirmDialog = document.getElementById('confirm-dialog');
@@ -1353,6 +1713,215 @@ function updateGoldenBubble() {
     goldenMode = false;
   }
 }
+
+const powerupBubble = document.getElementById('powerup-bubble');
+const powerupCount = document.getElementById('powerup-count');
+
+function updatePowerupBubble() {
+  const count = (shopData.powerups && shopData.powerups.merge12) || 0;
+  if (count > 0) {
+    powerupBubble.style.display = 'flex';
+    powerupBubble.textContent = '💥';
+    powerupCount.textContent = count;
+    powerupBubble.appendChild(powerupCount);
+  } else {
+    powerupBubble.style.display = 'none';
+  }
+}
+
+function useMergePowerup() {
+  if (!shopData.powerups || shopData.powerups.merge12 <= 0) return;
+  if (!engine) return;
+  const bodies = Composite.allBodies(engine.world);
+  const toRemove = [];
+  for (const body of bodies) {
+    if (body.label !== 'circle') continue;
+    const tier = body.plugin.tier;
+    if (tier <= 2) toRemove.push(body); // tier 0, 1, and 2 (balls 1, 2, and 3)
+  }
+  if (toRemove.length === 0) return;
+  // Use the power-up
+  shopData.powerups.merge12--;
+  saveShopData();
+  updatePowerupBubble();
+  // Calculate merged tier and award points
+  let totalValue = 0;
+  let mergePoints = 0;
+  for (const body of toRemove) {
+    totalValue += (body.plugin.tier + 1);
+    const pts = (body.plugin.tier + 1) * 10 * getPointMultiplier();
+    mergePoints += pts;
+    const { x, y } = body.position;
+    spawnFloatingText(x, y, '+' + pts, '#7bed9f', 18);
+    Composite.remove(engine.world, body);
+  }
+  score += mergePoints;
+  scoreEl.textContent = 'Score: ' + score;
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem('circleMerge_highScore', highScore);
+    highScoreEl.textContent = 'Best: ' + highScore;
+  }
+  checkGoldenMilestone();
+  // Convert total value to a tier (capped at tier 10)
+  const mergedTier = Math.min(10, Math.max(2, Math.floor(totalValue / 2)));
+  currentTier = mergedTier;
+  updateNextPreview();
+  spawnFloatingText(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'MERGED → Tier ' + (mergedTier + 1) + '!', '#ff9ecf', 32);
+  // Play a zap sound
+  if (soundEnabled) {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.3);
+  }
+}
+
+powerupBubble.addEventListener('click', useMergePowerup);
+
+const blenderBubble = document.getElementById('blender-bubble');
+const blenderCount = document.getElementById('blender-count');
+const waterOverlay = document.getElementById('water-overlay');
+
+function updateBlenderBubble() {
+  const count = (shopData.powerups && shopData.powerups.blender) || 0;
+  if (count > 0) {
+    blenderBubble.style.display = 'flex';
+    blenderBubble.textContent = '🌊';
+    blenderCount.textContent = count;
+    blenderBubble.appendChild(blenderCount);
+  } else {
+    blenderBubble.style.display = 'none';
+  }
+}
+
+let blenderActive = false;
+
+function useBlender() {
+  if (!shopData.powerups || shopData.powerups.blender <= 0) return;
+  if (!engine) return;
+  const bodies = Composite.allBodies(engine.world);
+  const circles = bodies.filter(b => b.label === 'circle');
+  if (circles.length === 0) return;
+
+  shopData.powerups.blender--;
+  saveShopData();
+  updateBlenderBubble();
+  blenderActive = true;
+
+  // Start water rising animation
+  waterOverlay.classList.remove('filling', 'draining');
+  void waterOverlay.offsetWidth;
+  waterOverlay.classList.add('filling');
+
+  // Play water/splash sound
+  if (soundEnabled) {
+    const actx = getAudioCtx();
+    // Rising water sound - low rumble that rises in pitch
+    const osc = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(60, actx.currentTime);
+    osc.frequency.linearRampToValueAtTime(200, actx.currentTime + 1.2);
+    gain.gain.setValueAtTime(0.08, actx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.12, actx.currentTime + 0.8);
+    gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 1.5);
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.start();
+    osc.stop(actx.currentTime + 1.5);
+    // Splash burst when full
+    setTimeout(() => {
+      if (!soundEnabled) return;
+      const bufSize = actx.sampleRate * 0.3;
+      const buf = actx.createBuffer(1, bufSize, actx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.12));
+      const src = actx.createBufferSource();
+      src.buffer = buf;
+      const filt = actx.createBiquadFilter();
+      filt.type = 'lowpass';
+      filt.frequency.setValueAtTime(3000, actx.currentTime);
+      const g2 = actx.createGain();
+      g2.gain.setValueAtTime(0.12, actx.currentTime);
+      src.connect(filt);
+      filt.connect(g2);
+      g2.connect(actx.destination);
+      src.start();
+    }, 1100);
+  }
+
+  spawnFloatingText(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'BLENDER!', '#74b9ff', 40);
+
+  // When water is full, apply buoyancy - light balls float up, heavy balls sink
+  const originalGravity = engine.gravity.y;
+  engine.gravity.y = 0;
+
+  setTimeout(() => {
+    const maxTier = 10;
+    for (const body of circles) {
+      const tier = body.plugin.tier;
+      // Heavy balls get pushed down, light balls get pushed up
+      // tier 0 = strong upward, tier 10 = strong downward
+      const force = (tier - maxTier / 2) / (maxTier / 2); // -1 to 1
+      Body.setVelocity(body, {
+        x: (Math.random() - 0.5) * 3,
+        y: force * 12
+      });
+    }
+  }, 1000);
+
+  // Disable ball-to-ball collisions so they can pass through each other
+  for (const body of circles) {
+    body.collisionFilter.group = -1; // negative group = no collision with same group
+  }
+
+  // Keep applying gentle buoyancy forces while water is present
+  let buoyancyInterval = setInterval(() => {
+    const maxTier = 10;
+    const allBodies = Composite.allBodies(engine.world);
+    for (const body of allBodies) {
+      if (body.label !== 'circle') continue;
+      const tier = body.plugin.tier;
+      const force = (tier - maxTier / 2) / (maxTier / 2);
+      Body.applyForce(body, body.position, { x: 0, y: force * 0.002 * body.mass });
+    }
+  }, 50);
+
+  // Restore gravity and collisions when water drains
+  setTimeout(() => {
+    clearInterval(buoyancyInterval);
+    engine.gravity.y = originalGravity;
+    blenderActive = false;
+    // Re-enable ball-to-ball collisions
+    const allBodies = Composite.allBodies(engine.world);
+    for (const body of allBodies) {
+      if (body.label === 'circle') {
+        body.collisionFilter.group = 0;
+      }
+    }
+  }, 2000);
+
+  // Drain water after shuffle
+  setTimeout(() => {
+    waterOverlay.classList.remove('filling');
+    void waterOverlay.offsetWidth;
+    waterOverlay.classList.add('draining');
+    setTimeout(() => {
+      waterOverlay.classList.remove('draining');
+    }, 1000);
+  }, 2000);
+}
+
+blenderBubble.addEventListener('click', useBlender);
 
 function saveGoldenBalls() {
   localStorage.setItem('circleMerge_goldenBalls', goldenBalls);
@@ -1448,6 +2017,119 @@ function updateNextPreview() {
   nextCircleEl.style.background = `radial-gradient(circle at 35% 35%, ${lighten(t.color, 40)}, ${t.color})`;
   nextCircleEl.style.fontSize = Math.max(10, size * 0.4) + 'px';
   nextCircleEl.textContent = nextTier + 1;
+}
+
+// Draw geometric shapes for the shapes ball skin
+function drawShape(ctx, x, y, s, tier) {
+  ctx.beginPath();
+  switch (tier) {
+    case 0: // Triangle
+      ctx.moveTo(x, y - s);
+      ctx.lineTo(x + s * 0.87, y + s * 0.5);
+      ctx.lineTo(x - s * 0.87, y + s * 0.5);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 1: // Diamond
+      ctx.moveTo(x, y - s);
+      ctx.lineTo(x + s * 0.7, y);
+      ctx.lineTo(x, y + s);
+      ctx.lineTo(x - s * 0.7, y);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 2: // Square (rotated slightly)
+      var sq = s * 0.8;
+      ctx.rect(x - sq, y - sq, sq * 2, sq * 2);
+      ctx.fill();
+      break;
+    case 3: // Pentagon
+      for (var i = 0; i < 5; i++) {
+        var a = (i * 2 * Math.PI / 5) - Math.PI / 2;
+        var px = x + s * Math.cos(a);
+        var py = y + s * Math.sin(a);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 4: // Hexagon
+      for (var i = 0; i < 6; i++) {
+        var a = (i * 2 * Math.PI / 6) - Math.PI / 6;
+        var px = x + s * Math.cos(a);
+        var py = y + s * Math.sin(a);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 5: // 4-pointed star
+      for (var i = 0; i < 8; i++) {
+        var a = (i * Math.PI / 4) - Math.PI / 2;
+        var rad = i % 2 === 0 ? s : s * 0.4;
+        var px = x + rad * Math.cos(a);
+        var py = y + rad * Math.sin(a);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 6: // Cross / plus
+      var w = s * 0.35;
+      ctx.moveTo(x - w, y - s);
+      ctx.lineTo(x + w, y - s);
+      ctx.lineTo(x + w, y - w);
+      ctx.lineTo(x + s, y - w);
+      ctx.lineTo(x + s, y + w);
+      ctx.lineTo(x + w, y + w);
+      ctx.lineTo(x + w, y + s);
+      ctx.lineTo(x - w, y + s);
+      ctx.lineTo(x - w, y + w);
+      ctx.lineTo(x - s, y + w);
+      ctx.lineTo(x - s, y - w);
+      ctx.lineTo(x - w, y - w);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 7: // 6-pointed star
+      for (var i = 0; i < 12; i++) {
+        var a = (i * Math.PI / 6) - Math.PI / 2;
+        var rad = i % 2 === 0 ? s : s * 0.5;
+        var px = x + rad * Math.cos(a);
+        var py = y + rad * Math.sin(a);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 8: // Octagon
+      for (var i = 0; i < 8; i++) {
+        var a = (i * 2 * Math.PI / 8) - Math.PI / 8;
+        var px = x + s * Math.cos(a);
+        var py = y + s * Math.sin(a);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 9: // Heart
+      ctx.moveTo(x, y + s * 0.7);
+      ctx.bezierCurveTo(x - s * 1.3, y - s * 0.2, x - s * 0.7, y - s * 1.1, x, y - s * 0.5);
+      ctx.bezierCurveTo(x + s * 0.7, y - s * 1.1, x + s * 1.3, y - s * 0.2, x, y + s * 0.7);
+      ctx.fill();
+      break;
+    case 10: // 5-pointed star
+      for (var i = 0; i < 10; i++) {
+        var a = (i * Math.PI / 5) - Math.PI / 2;
+        var rad = i % 2 === 0 ? s : s * 0.4;
+        var px = x + rad * Math.cos(a);
+        var py = y + rad * Math.sin(a);
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      break;
+  }
 }
 
 function lighten(hex, pct) {
@@ -1630,6 +2312,14 @@ function checkGameOver() {
   }
   anyAbove = countAbove > 0;
 
+  // Skip danger zone during blender effect
+  if (blenderActive) {
+    container.style.boxShadow = '';
+    container.style.borderColor = '';
+    gameOverTimer = 0;
+    return;
+  }
+
   // Red glow warning when balls are in danger zone
   if (anyAbove) {
     const intensity = Math.min(countAbove / 3, 1);
@@ -1774,9 +2464,8 @@ function draw() {
     } else {
       const skin = shopData.equipped.skin;
 
-      if (skin === 'emoji') {
-        // Emoji skin - subtle circle with fully visible emoji on top
-        // Subtle outline only - no filled background so emoji stays vibrant
+      if (skin === 'shapes') {
+        // Shapes skin - draw actual geometric shapes on canvas
         ctx.save();
         ctx.shadowColor = t.glow;
         ctx.shadowBlur = 12;
@@ -1786,7 +2475,28 @@ function draw() {
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
-        // Draw emoji - completely isolated from any alpha/shadow state
+        ctx.save();
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = Math.max(1.5, r * 0.06);
+        ctx.lineJoin = 'round';
+        const s = r * 0.55; // shape size relative to ball
+        drawShape(ctx, x, y, s, tier);
+        ctx.restore();
+      } else if (skin === 'emoji') {
+        // Emoji skin - subtle circle with fully visible emoji on top
+        ctx.save();
+        ctx.shadowColor = t.glow;
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
         ctx.save();
         ctx.shadowColor = 'transparent';
         ctx.shadowBlur = 0;
@@ -1797,6 +2507,18 @@ function draw() {
         ctx.fillStyle = '#ffffff';
         ctx.fillText(EMOJI_MAP[tier] || '⭐', x, y + 2);
         ctx.restore();
+      } else if (skin === 'candy') {
+        // Candy skin - all custom drawn
+        ctx.save();
+        ctx.shadowColor = t.glow;
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+        drawCandy(ctx, x, y, r, CANDY_MAP[tier] || 'candy');
       } else if (skin === 'neon') {
         // Neon skin - brighter glow, no number
         ctx.save();
@@ -1833,6 +2555,271 @@ function draw() {
         ctx.lineWidth = 1;
         ctx.stroke();
         ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.font = `bold ${Math.max(12, r * 0.6)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(tier + 1, x, y + 1);
+      } else if (skin === 'glass') {
+        // Stained glass skin - translucent colored glass with light refraction
+        ctx.save();
+        ctx.shadowColor = t.glow;
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        // Base color - transparent
+        const glassGrad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.05, x, y, r);
+        glassGrad.addColorStop(0, 'rgba(255,255,255,0.7)');
+        glassGrad.addColorStop(0.3, t.color + '88');
+        glassGrad.addColorStop(0.7, t.color + 'aa');
+        glassGrad.addColorStop(1, t.color + '66');
+        ctx.fillStyle = glassGrad;
+        ctx.fill();
+        ctx.restore();
+        // Glass highlight streak - positioned at top of ball
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(x - r * 0.15, y - r * 0.55, r * 0.45, r * 0.12, -0.4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.fill();
+        ctx.restore();
+        // Small secondary highlight
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(x - r * 0.3, y - r * 0.4, r * 0.1, r * 0.05, -0.4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.35)';
+        ctx.fill();
+        ctx.restore();
+        // Glass edge / leading
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        // Tier number
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = `bold ${Math.max(12, r * 0.55)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(tier + 1, x, y + 1);
+      } else if (skin === 'wood') {
+        // Wood skin - colored wood grain texture
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.clip();
+        // Use the tier's actual color as the wood base
+        const woodBase = t.color;
+        const bR = parseInt(woodBase.slice(1,3), 16);
+        const bG = parseInt(woodBase.slice(3,5), 16);
+        const bB = parseInt(woodBase.slice(5,7), 16);
+        const woodColor = `rgb(${bR},${bG},${bB})`;
+        const woodDark = `rgb(${Math.max(0,bR-40)},${Math.max(0,bG-40)},${Math.max(0,bB-40)})`;
+        ctx.fillStyle = woodColor;
+        ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        // Wood grain lines
+        ctx.strokeStyle = woodDark;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 0.4;
+        for (let i = -r; i < r; i += r * 0.18) {
+          ctx.beginPath();
+          ctx.moveTo(x - r, y + i);
+          const wave = Math.sin(i * 0.3) * r * 0.15;
+          ctx.bezierCurveTo(x - r * 0.5, y + i + wave, x + r * 0.5, y + i - wave, x + r, y + i + wave * 0.5);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+        // Wood knot swirls
+        ctx.strokeStyle = woodDark;
+        ctx.lineWidth = 0.8;
+        ctx.globalAlpha = 0.35;
+        // Knot 1 - upper left area
+        const k1x = x - r * 0.3, k1y = y - r * 0.2, k1r = r * 0.18;
+        for (let ring = 0; ring < 3; ring++) {
+          ctx.beginPath();
+          ctx.ellipse(k1x, k1y, k1r + ring * k1r * 0.5, k1r * 0.7 + ring * k1r * 0.4, 0.3, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        // Knot 2 - lower right area (only on bigger balls)
+        if (r > 20) {
+          const k2x = x + r * 0.25, k2y = y + r * 0.3, k2r = r * 0.12;
+          for (let ring = 0; ring < 2; ring++) {
+            ctx.beginPath();
+            ctx.ellipse(k2x, k2y, k2r + ring * k2r * 0.6, k2r * 0.6 + ring * k2r * 0.4, -0.4, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+        // Subtle border
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = woodDark;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        // Tier number
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.font = `bold ${Math.max(12, r * 0.55)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 3;
+        ctx.fillText(tier + 1, x, y + 1);
+        ctx.shadowBlur = 0;
+      } else if (skin === 'dirt') {
+        // Minecraft dirt block texture skin
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.clip();
+        // Dirt brown base
+        ctx.fillStyle = '#8b6914';
+        ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        // Grass green top ~30%
+        const grassY = y - r;
+        const grassH = r * 0.6;
+        ctx.fillStyle = '#5b8731';
+        ctx.fillRect(x - r, grassY, r * 2, grassH);
+        // Ragged grass edge (seeded)
+        let gseed = tier * 777 + 13;
+        function grassRand() { gseed = (gseed * 16807 + 0) % 2147483647; return (gseed & 0x7fffffff) / 2147483647; }
+        ctx.fillStyle = '#5b8731';
+        for (let gx = x - r; gx < x + r; gx += 4) {
+          const h = grassH + grassRand() * r * 0.15;
+          ctx.fillRect(gx, grassY, 4, h);
+        }
+        // Pixel-style dirt speckles (seeded by tier to avoid flicker)
+        const speckleColors = ['#6b4513', '#7a5a1a', '#9c7a20', '#5c3a0e'];
+        let seed = tier * 1000 + 42;
+        function seededRand() { seed = (seed * 16807 + 0) % 2147483647; return (seed & 0x7fffffff) / 2147483647; }
+        for (let s = 0; s < 20; s++) {
+          const sx = x - r + seededRand() * r * 2;
+          const sy = y - r + grassH + seededRand() * (r * 2 - grassH);
+          const ss = 2 + seededRand() * 3;
+          ctx.fillStyle = speckleColors[Math.floor(seededRand() * speckleColors.length)];
+          ctx.fillRect(sx, sy, ss, ss);
+        }
+        // Green speckles in grass area
+        const grassSpeckles = ['#4a7228', '#6b9a3a', '#3d5e1f'];
+        for (let s = 0; s < 10; s++) {
+          const sx = x - r + seededRand() * r * 2;
+          const sy = grassY + seededRand() * grassH;
+          const ss = 2 + seededRand() * 2;
+          ctx.fillStyle = grassSpeckles[Math.floor(seededRand() * grassSpeckles.length)];
+          ctx.fillRect(sx, sy, ss, ss);
+        }
+        ctx.restore();
+        // Black outline
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = '#222';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+        // Tier number with shadow for readability
+        ctx.fillStyle = '#fff';
+        ctx.font = `bold ${Math.max(12, r * 0.55)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.8)';
+        ctx.shadowBlur = 4;
+        ctx.fillText(tier + 1, x, y + 1);
+        ctx.shadowBlur = 0;
+      } else if (skin === 'hologram') {
+        // Hologram skin - light blue with hexagon grid pattern
+        ctx.save();
+        ctx.shadowColor = '#60c0ff';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        const holoGrad = ctx.createRadialGradient(x - r * 0.2, y - r * 0.2, r * 0.05, x, y, r);
+        holoGrad.addColorStop(0, 'rgba(200,240,255,0.7)');
+        holoGrad.addColorStop(0.4, 'rgba(96,192,255,0.5)');
+        holoGrad.addColorStop(0.8, 'rgba(60,160,240,0.4)');
+        holoGrad.addColorStop(1, 'rgba(40,120,200,0.3)');
+        ctx.fillStyle = holoGrad;
+        ctx.fill();
+        ctx.restore();
+        // Hexagon grid pattern
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.clip();
+        const hexR = Math.max(6, r * 0.22);
+        const hexW = hexR * 2;
+        const hexH = hexR * Math.sqrt(3);
+        ctx.strokeStyle = 'rgba(160,232,255,0.4)';
+        ctx.lineWidth = 0.8;
+        for (let row = -Math.ceil(r / hexH) - 1; row <= Math.ceil(r / hexH) + 1; row++) {
+          for (let col = -Math.ceil(r / (hexR * 1.5)) - 1; col <= Math.ceil(r / (hexR * 1.5)) + 1; col++) {
+            const hx = x + col * hexR * 1.5;
+            const hy = y + row * hexH + (col % 2 ? hexH * 0.5 : 0);
+            const dist = Math.sqrt((hx - x) ** 2 + (hy - y) ** 2);
+            if (dist > r + hexR) continue;
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+              const angle = i * Math.PI / 3;
+              const px = hx + hexR * Math.cos(angle);
+              const py = hy + hexR * Math.sin(angle);
+              if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+            ctx.stroke();
+            // Subtle fill on some hexagons for shimmer
+            if ((row + col) % 3 === 0) {
+              ctx.fillStyle = 'rgba(180,240,255,0.15)';
+              ctx.fill();
+            }
+          }
+        }
+        ctx.restore();
+        // Outer glow ring
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(160,232,255,0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        // Highlight
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(x - r * 0.2, y - r * 0.3, r * 0.3, r * 0.12, -0.4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(220,248,255,0.4)';
+        ctx.fill();
+        ctx.restore();
+        // Tier number
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = `bold ${Math.max(12, r * 0.55)}px system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(tier + 1, x, y + 1);
+      } else if (skin === 'gold') {
+        // Gold skin - luxurious metallic golden balls
+        ctx.save();
+        ctx.shadowColor = '#ffe040';
+        ctx.shadowBlur = 25;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        const goldGrad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.05, x, y, r);
+        goldGrad.addColorStop(0, '#fffde0');
+        goldGrad.addColorStop(0.25, '#f5d742');
+        goldGrad.addColorStop(0.6, '#daa520');
+        goldGrad.addColorStop(1, '#b8860b');
+        ctx.fillStyle = goldGrad;
+        ctx.fill();
+        ctx.restore();
+        // Shiny highlight
+        ctx.save();
+        ctx.beginPath();
+        ctx.ellipse(x - r * 0.25, y - r * 0.3, r * 0.35, r * 0.15, -0.4, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,240,0.55)';
+        ctx.fill();
+        ctx.restore();
+        // Gold outline
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,248,200,0.6)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // Tier number
+        ctx.fillStyle = 'rgba(120,90,0,0.6)';
         ctx.font = `bold ${Math.max(12, r * 0.6)}px system-ui`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -2124,11 +3111,13 @@ function showMenu() {
   playBtn.textContent = savedState ? 'Resume' : 'Play';
   gameScreen.style.display = 'none';
   menuScreen.style.display = 'flex';
+  versionLabel.style.display = '';
   startMusic('menu');
 }
 
 function startGame() {
   menuScreen.style.display = 'none';
+  versionLabel.style.display = 'none';
   gameScreen.style.display = 'flex';
   startMusic('game');
   if (savedState) {
@@ -2146,11 +3135,13 @@ backBtn.addEventListener('click', showMenu);
 // Settings menu
 document.getElementById('settings-btn').addEventListener('click', () => {
   menuScreen.style.display = 'none';
+  versionLabel.style.display = 'none';
   settingsScreen.style.display = 'flex';
 });
 document.getElementById('settings-back-btn').addEventListener('click', () => {
   settingsScreen.style.display = 'none';
   menuScreen.style.display = 'flex';
+  versionLabel.style.display = '';
 });
 document.getElementById('reset-score-btn').addEventListener('click', () => {
   showConfirm('Are you sure you want to reset your high score?', () => {
@@ -2170,22 +3161,28 @@ goldenBubbleEl.addEventListener('click', () => {
   }
 });
 
-// Build decorative circles on menu
+// Build decorative circles on menu (scrolling loop)
 (function buildMenuCircles() {
   const container = document.getElementById('menu-circles');
-  for (let i = 0; i < 5; i++) {
-    const t = TIERS[i];
-    const size = t.radius * 2 * 0.6;
-    const el = document.createElement('div');
-    el.className = 'menu-circle';
-    el.style.width = size + 'px';
-    el.style.height = size + 'px';
-    el.style.background = `radial-gradient(circle at 35% 35%, ${lighten(t.color, 40)}, ${t.color})`;
-    el.style.fontSize = Math.max(9, size * 0.4) + 'px';
-    el.style.boxShadow = `0 0 12px ${t.glow}`;
-    el.textContent = i + 1;
-    container.appendChild(el);
+  const inner = document.createElement('div');
+  inner.id = 'menu-circles-inner';
+  // Create enough sets for seamless loop across full screen
+  for (let repeat = 0; repeat < 6; repeat++) {
+    for (let i = 0; i < 5; i++) {
+      const t = TIERS[i];
+      const size = t.radius * 2 * 0.6;
+      const el = document.createElement('div');
+      el.className = 'menu-circle';
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.background = `radial-gradient(circle at 35% 35%, ${lighten(t.color, 40)}, ${t.color})`;
+      el.style.fontSize = Math.max(9, size * 0.4) + 'px';
+      el.style.boxShadow = `0 0 12px ${t.glow}`;
+      el.textContent = i + 1;
+      inner.appendChild(el);
+    }
   }
+  container.appendChild(inner);
 })();
 
 // Sound toggle
@@ -2432,7 +3429,7 @@ try {
       const knob = event2xSwitch.querySelector('.knob');
       knob.style.left = doublePointsActive ? '23px' : '3px';
       event2xSwitch.style.background = doublePointsActive ? '#e94560' : 'rgba(255,255,255,0.15)';
-      if (doublePointsActive && !wasActive) showEventAnnouncement();
+      if (doublePointsActive && !wasActive) showEventAnnouncement('2x POINTS EVENT!', '#ff6b6b');
     });
 
     const tier1Ref = db.ref('events/tier1Only');
@@ -2547,6 +3544,8 @@ if (window.matchMedia('(max-width: 480px)').matches) {
   if (utilBar) {
     utilBar.appendChild(document.getElementById('event-banner'));
     utilBar.appendChild(document.getElementById('golden-bubble'));
+    utilBar.appendChild(document.getElementById('powerup-bubble'));
+    utilBar.appendChild(document.getElementById('blender-bubble'));
     utilBar.appendChild(document.getElementById('info-btn'));
   }
 }
@@ -2797,22 +3796,30 @@ const menuTokensEl = document.getElementById('menu-tokens');
 
 const SHOP_ITEMS = {
   bg: {
-    sunset: { price: 500 },
-    ocean: { price: 500 },
-    galaxy: { price: 1000 },
-    forest: { price: 750 },
-    volcano: { price: 1500 },
-    dirt: { price: 750 },
+    dirt: { price: 500 },
+    sunset: { price: 1000 },
+    ocean: { price: 1000 },
+    forest: { price: 1500 },
+    galaxy: { price: 2000 },
+    volcano: { price: 3000 },
+    hologram: { price: 5000 },
     gold: { price: 10000 },
   },
   skin: {
-    neon: { price: 500 },
-    pastel: { price: 500 },
-    emoji: { price: 1000 },
+    dirt: { price: 500 },
+    neon: { price: 1000 },
+    pastel: { price: 1000 },
+    glass: { price: 1200 },
+    shapes: { price: 1500 },
+    wood: { price: 1500 },
+    candy: { price: 1750 },
+    emoji: { price: 2000 },
+    hologram: { price: 5000 },
+    gold: { price: 10000 },
   },
   golden: {
-    golden1: { price: 10, amount: 1 },
-    golden5: { price: 50, amount: 5 },
+    golden1: { price: 100, amount: 1 },
+    golden5: { price: 450, amount: 5 },
   }
 };
 
@@ -2825,8 +3832,20 @@ function updateShopButtons() {
   document.querySelectorAll('.shop-buy-btn').forEach(btn => {
     const cat = btn.dataset.category;
     const id = btn.dataset.id;
-    if (cat === 'golden') {
-      btn.textContent = 'Buy';
+    if (cat === 'golden' || cat === 'powerup') {
+      if (id === 'golden5') {
+        btn.textContent = 'Buy 5 — 450';
+      } else if (id === 'golden1') {
+        btn.textContent = 'Buy 1';
+      } else if (id === 'blender5') {
+        btn.textContent = 'Buy 5 — 1350';
+      } else if (id === 'merge12x5') {
+        btn.textContent = 'Buy 5 — 2025';
+      } else if (id === 'blender' || id === 'merge12') {
+        btn.textContent = 'Buy 1';
+      } else {
+        btn.textContent = 'Buy';
+      }
       btn.className = 'shop-buy-btn';
       return;
     }
@@ -2920,7 +3939,8 @@ function drawBgEffects(bgId) {
     drawCloud(50, 220, 80, 25, 0.08);
     drawCloud(330, 180, 100, 28, 0.1);
   } else if (bgId === 'forest') {
-    // Draw evergreen trees
+    // Draw evergreen trees behind balls
+    bctx.globalAlpha = 1;
     function drawTree(x, y, scale) {
       bctx.fillStyle = '#3e2723';
       bctx.fillRect(x - 4 * scale, y, 8 * scale, 20 * scale);
@@ -2952,13 +3972,14 @@ function drawBgEffects(bgId) {
       drawTree(tx, GAME_HEIGHT - 10 - Math.random() * 15, scale);
     });
     // Some background trees (smaller, darker)
-    bctx.globalAlpha = 0.4;
+    bctx.globalAlpha = 0.6;
     [50, 120, 190, 270, 350].forEach(tx => {
       drawTree(tx, GAME_HEIGHT - 60 - Math.random() * 30, 0.5);
     });
     bctx.globalAlpha = 1;
   } else if (bgId === 'volcano') {
-    // Draw volcano
+    // Draw volcano behind balls
+    bctx.globalAlpha = 1;
     bctx.fillStyle = '#4a2c17';
     bctx.beginPath();
     bctx.moveTo(120, GAME_HEIGHT);
@@ -2988,7 +4009,7 @@ function drawBgEffects(bgId) {
     bctx.quadraticCurveTo(240, GAME_HEIGHT - 100, 260, GAME_HEIGHT);
     bctx.stroke();
     // Smoke particles
-    bctx.globalAlpha = 0.15;
+    bctx.globalAlpha = 0.4;
     for (let i = 0; i < 15; i++) {
       const sx = 200 + (Math.random() - 0.5) * 40;
       const sy = GAME_HEIGHT - 210 - Math.random() * 120;
@@ -3013,8 +4034,10 @@ function drawBgEffects(bgId) {
     bctx.lineTo(280, GAME_HEIGHT);
     bctx.closePath();
     bctx.fill();
+    bctx.globalAlpha = 1;
   } else if (bgId === 'dirt') {
-    // Minecraft-style dirt block pattern
+    // Minecraft-style dirt block pattern behind balls
+    bctx.globalAlpha = 1;
     const blockSize = 20;
     const cols = Math.ceil(GAME_WIDTH / blockSize);
     const rows = Math.ceil(GAME_HEIGHT / blockSize);
@@ -3047,8 +4070,10 @@ function drawBgEffects(bgId) {
       bctx.fillStyle = `rgb(${60 + Math.floor(Math.random()*30)},${100 + Math.floor(Math.random()*40)},${30 + Math.floor(Math.random()*20)})`;
       bctx.fillRect(c * blockSize, 0, blockSize, blockSize);
     }
+    bctx.globalAlpha = 1;
   } else if (bgId === 'gold') {
-    // Golden bars stacked
+    // Golden bars stacked behind balls
+    bctx.globalAlpha = 1;
     function drawBar(x, y, w, h) {
       // Bar body
       const grad = bctx.createLinearGradient(x, y, x, y + h);
@@ -3094,13 +4119,181 @@ function drawBgEffects(bgId) {
       bctx.arc(sx, sy, ss, 0, Math.PI * 2);
       bctx.fill();
     }
+    bctx.globalAlpha = 1;
+  } else if (bgId === 'hologram') {
+    // Hologram background - dark base with hexagon outlines
+    bctx.globalAlpha = 1;
+    const hexColor = 'rgba(96,192,255,0.25)';
+    const hexHighlight = 'rgba(160,232,255,0.12)';
+
+    function drawHex(cx, cy, size) {
+      bctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = i * Math.PI / 3;
+        const px = cx + size * Math.cos(angle);
+        const py = cy + size * Math.sin(angle);
+        if (i === 0) bctx.moveTo(px, py); else bctx.lineTo(px, py);
+      }
+      bctx.closePath();
+    }
+
+    // Giant center hexagon
+    bctx.strokeStyle = hexColor;
+    bctx.lineWidth = 2;
+    drawHex(GAME_WIDTH / 2, GAME_HEIGHT / 2, Math.min(GAME_WIDTH, GAME_HEIGHT) * 0.3);
+    bctx.stroke();
+    // Inner ring of the center hex
+    bctx.strokeStyle = 'rgba(96,192,255,0.15)';
+    bctx.lineWidth = 1;
+    drawHex(GAME_WIDTH / 2, GAME_HEIGHT / 2, Math.min(GAME_WIDTH, GAME_HEIGHT) * 0.22);
+    bctx.stroke();
+
+    // Corner hexagons - inset so fully visible, top ones below danger zone
+    const cornerSize = Math.min(GAME_WIDTH, GAME_HEIGHT) * 0.12;
+    const margin = cornerSize + 10;
+    const topY = 65 + cornerSize; // below danger zone
+    const corners = [
+      { x: margin, y: topY },
+      { x: GAME_WIDTH - margin, y: topY },
+      { x: margin, y: GAME_HEIGHT - margin },
+      { x: GAME_WIDTH - margin, y: GAME_HEIGHT - margin }
+    ];
+    bctx.strokeStyle = hexColor;
+    bctx.lineWidth = 1.5;
+    for (const c of corners) {
+      drawHex(c.x, c.y, cornerSize);
+      bctx.stroke();
+      // Smaller inner hex
+      bctx.strokeStyle = 'rgba(96,192,255,0.15)';
+      drawHex(c.x, c.y, cornerSize * 0.6);
+      bctx.stroke();
+      bctx.strokeStyle = hexColor;
+    }
+
+    // Decorative smaller hexagons - snapped to background grid, symmetrical
+    const midX = GAME_WIDTH / 2;
+    const midY = GAME_HEIGHT / 2;
+    const decSize = cornerSize * 0.5;
+    // Snap to centered grid (centered on midX, midY)
+    const gx = 25 * 1.5; // grid x spacing = 37.5
+    const gy = 25 * Math.sqrt(3); // grid y spacing ≈ 43.3
+    function snapToGrid(px, py) {
+      // Snap relative to center
+      const col = Math.round((px - midX) / gx);
+      const row = Math.round((py - midY - (col % 2 ? gy * 0.5 : 0)) / gy);
+      return { x: midX + col * gx, y: midY + row * gy + (col % 2 ? gy * 0.5 : 0) };
+    }
+    // Use grid column offsets from center for perfect symmetry
+    // Left side only, then mirror
+    const decos = [];
+    const decPositions = [
+      // col offset, row offset from center (using grid units)
+      { c: -3, r: -3 },  // upper left area
+      { c: -3, r: 3 },   // lower left area
+      { c: -1, r: -4 },  // top area, near center
+      { c: -1, r: 4 },   // bottom area, near center
+    ];
+    for (const p of decPositions) {
+      const lx = midX + p.c * gx;
+      const ly = midY + p.r * gy + (p.c % 2 ? gy * 0.5 : 0);
+      const rx = midX - p.c * gx;
+      const ry = midY + p.r * gy + ((-p.c) % 2 ? gy * 0.5 : 0);
+      decos.push({ x: lx, y: ly });
+      decos.push({ x: rx, y: ry });
+    }
+    bctx.strokeStyle = 'rgba(96,192,255,0.18)';
+    bctx.lineWidth = 1;
+    for (const d of decos) {
+      drawHex(d.x, d.y, decSize);
+      bctx.stroke();
+    }
+
+    // Centered grid of small hexagons across the background
+    const smallHex = 25;
+    const sHexH = smallHex * Math.sqrt(3);
+    const gridOffX = midX % (smallHex * 1.5); // offset so grid is centered on midX
+    const gridOffY = midY % sHexH; // offset so grid is centered on midY
+    bctx.strokeStyle = 'rgba(96,192,255,0.08)';
+    bctx.lineWidth = 0.5;
+    const colsNeeded = Math.ceil(GAME_WIDTH / (smallHex * 1.5)) + 2;
+    const rowsNeeded = Math.ceil(GAME_HEIGHT / sHexH) + 2;
+    for (let row = -rowsNeeded; row <= rowsNeeded; row++) {
+      for (let col = -colsNeeded; col <= colsNeeded; col++) {
+        const hx = midX + col * smallHex * 1.5;
+        const hy = midY + row * sHexH + (col % 2 ? sHexH * 0.5 : 0);
+        if (hx < -smallHex || hx > GAME_WIDTH + smallHex || hy < -smallHex || hy > GAME_HEIGHT + smallHex) continue;
+        drawHex(hx, hy, smallHex);
+        bctx.stroke();
+      }
+    }
+
+    // Subtle glow in center
+    const centerGlow = bctx.createRadialGradient(GAME_WIDTH / 2, GAME_HEIGHT / 2, 0, GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_HEIGHT * 0.4);
+    centerGlow.addColorStop(0, 'rgba(96,192,255,0.06)');
+    centerGlow.addColorStop(1, 'rgba(96,192,255,0)');
+    bctx.fillStyle = centerGlow;
+    bctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
   }
 }
 
+function playPurchaseSound() {
+  if (!soundEnabled) return;
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(880, ctx.currentTime);
+  osc.frequency.setValueAtTime(1320, ctx.currentTime + 0.08);
+  gain.gain.setValueAtTime(0.15, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + 0.3);
+}
+
 function purchaseItem(cat, id) {
+  if (cat === 'powerup') {
+    // Handle bulk buy (x5) variants
+    const bulkMap = { 'merge12x5': { base: 'merge12', qty: 5, price: 2025 }, 'blender5': { base: 'blender', qty: 5, price: 1350 } };
+    const prices = { merge12: 450, blender: 300 };
+    let actualId = id;
+    let qty = 1;
+    let price;
+    if (bulkMap[id]) {
+      actualId = bulkMap[id].base;
+      qty = bulkMap[id].qty;
+      price = bulkMap[id].price;
+    } else {
+      price = prices[id];
+    }
+    if (!price) return;
+    if (tokens < price) {
+      const tokenEl = document.getElementById('shop-tokens');
+      tokenEl.style.color = '#ff6b6b';
+      tokenEl.style.transform = 'scale(1.2)';
+      setTimeout(() => { tokenEl.style.color = '#fdcb6e'; tokenEl.style.transform = 'scale(1)'; }, 400);
+      return;
+    }
+    tokens -= price;
+    shopData.powerups[actualId] = (shopData.powerups[actualId] || 0) + qty;
+    saveShopData();
+    updateTokenDisplays();
+    updateShopButtons();
+    updatePowerupBubble();
+    updateBlenderBubble();
+    playPurchaseSound();
+    return;
+  }
   if (cat === 'golden') {
     const item = SHOP_ITEMS.golden[id];
-    if (tokens < item.price) return;
+    if (tokens < item.price) {
+      const tokenEl = document.getElementById('shop-tokens');
+      tokenEl.style.color = '#ff6b6b';
+      tokenEl.style.transform = 'scale(1.2)';
+      setTimeout(() => { tokenEl.style.color = '#fdcb6e'; tokenEl.style.transform = 'scale(1)'; }, 400);
+      return;
+    }
     tokens -= item.price;
     goldenBalls += item.amount;
     updateGoldenBubble();
@@ -3108,6 +4301,7 @@ function purchaseItem(cat, id) {
     saveShopData();
     updateTokenDisplays();
     updateShopButtons();
+    playPurchaseSound();
     return;
   }
   const item = SHOP_ITEMS[cat][id];
@@ -3124,7 +4318,14 @@ function purchaseItem(cat, id) {
     if (cat === 'bg') applyBackground();
     return;
   }
-  if (tokens < item.price) return;
+  if (tokens < item.price) {
+    // Flash the token display to show insufficient funds
+    const tokenEl = document.getElementById('shop-tokens');
+    tokenEl.style.color = '#ff6b6b';
+    tokenEl.style.transform = 'scale(1.2)';
+    setTimeout(() => { tokenEl.style.color = '#fdcb6e'; tokenEl.style.transform = 'scale(1)'; }, 400);
+    return;
+  }
   tokens -= item.price;
   shopData.owned[cat].push(id);
   shopData.equipped[cat] = id;
@@ -3132,17 +4333,24 @@ function purchaseItem(cat, id) {
   updateTokenDisplays();
   updateShopButtons();
   if (cat === 'bg') applyBackground();
+  playPurchaseSound();
 }
 
-// Shop event listeners
-document.querySelectorAll('.shop-buy-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    purchaseItem(btn.dataset.category, btn.dataset.id);
+// Shop event listeners - on entire shop item (buy button clicks bubble up)
+document.querySelectorAll('.shop-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // Check if a specific button was clicked (for stacked buy buttons)
+    const btn = e.target.closest('.shop-buy-btn');
+    const cat = (btn && btn.dataset.category) || item.dataset.category;
+    const id = (btn && btn.dataset.id) || item.dataset.id;
+    if (cat && id) purchaseItem(cat, id);
   });
 });
 
 document.getElementById('shop-btn').addEventListener('click', () => {
   menuScreen.style.display = 'none';
+  versionLabel.style.display = 'none';
   shopScreen.style.display = 'flex';
   updateTokenDisplays();
   updateShopButtons();
@@ -3151,6 +4359,7 @@ document.getElementById('shop-btn').addEventListener('click', () => {
 document.getElementById('shop-back-btn').addEventListener('click', () => {
   shopScreen.style.display = 'none';
   menuScreen.style.display = 'flex';
+  versionLabel.style.display = '';
 });
 
 // Apply saved background on load
@@ -3166,9 +4375,22 @@ shopData = JSON.parse(localStorage.getItem('circleMerge_shopData') || 'null') ||
   owned: { bg: ['default'], skin: ['default'] },
   equipped: { bg: 'default', skin: 'default' }
 };
+if (!shopData.owned || !Array.isArray(shopData.owned.bg)) {
+  shopData.owned = { bg: ['default'], skin: ['default'] };
+}
+if (!Array.isArray(shopData.owned.skin)) {
+  shopData.owned.skin = ['default'];
+}
+if (!shopData.equipped || typeof shopData.equipped.bg !== 'string') {
+  shopData.equipped = { bg: 'default', skin: 'default' };
+}
+if (!shopData.powerups) shopData.powerups = { merge12: 0 };
+saveShopData();
 applyBackground();
 updateTokenDisplays();
 updateShopButtons();
+updatePowerupBubble();
+updateBlenderBubble();
 showMenu();
 
 // Register service worker for PWA

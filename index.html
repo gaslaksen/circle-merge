@@ -1139,6 +1139,7 @@
 
 <div id="game-screen">
   <div id="mobile-util-bar"></div>
+  <div id="token-tracker" style="color:#fdcb6e;font-size:12px;font-weight:600;text-align:center;margin-bottom:2px;opacity:0.7;">🪙 0 tokens</div>
   <div id="header">
     <button id="back-btn">Menu</button>
     <button id="reset-btn">Reset</button>
@@ -1691,6 +1692,15 @@ const dropLine = document.getElementById('drop-line');
 const scoreEl = document.getElementById('score');
 const finalScoreEl = document.getElementById('final-score');
 const gameOverEl = document.getElementById('game-over');
+const tokenTracker = document.getElementById('token-tracker');
+let lastTrackedScore = -1;
+function updateTokenTracker() {
+  if (score !== lastTrackedScore) {
+    lastTrackedScore = score;
+    const earned = Math.floor(score / 100);
+    tokenTracker.textContent = earned + ' tokens';
+  }
+}
 const nextCircleEl = document.getElementById('next-circle');
 const restartBtn = document.getElementById('restart-btn');
 const goldenBubbleEl = document.getElementById('golden-bubble');
@@ -2393,6 +2403,7 @@ function spawnFloatingText(x, y, text, color, size) {
 const ctx = canvas.getContext('2d');
 
 function draw() {
+  updateTokenTracker();
   ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
   // Draw bodies
